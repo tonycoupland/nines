@@ -30,28 +30,33 @@ class MegaTicTacToe:
             print(f"\n🎯 Player {self.current_player} can choose any grid")
         print()
         
-        # Display grid numbers at the top
-        print("   Grid 1      Grid 2      Grid 3")
-        print()
-        
         # Display the mega board - 3 rows of grids
         for grid_row in range(3):
-            # Each grid has 3 rows, so we need to display 3 lines for each grid row
-            for line in range(3):
-                row_output = ""
-                for grid_col in range(3):
-                    grid_num = grid_row * 3 + grid_col
-                    grid_display = self._get_grid_display(grid_num, line)
-                    row_output += grid_display
-                    if grid_col < 2:
-                        row_output += " || "
-                print(row_output)
+            # Each grid has 5 lines (3 content + 2 separators)
+            for line in range(5):
+                if line in [1, 3]:  # Separator lines within grids
+                    row_output = ""
+                    for grid_col in range(3):
+                        grid_num = grid_row * 3 + grid_col
+                        separator = self._get_grid_separator(grid_num)
+                        row_output += separator
+                        if grid_col < 2:
+                            row_output += "  |  "
+                    print(row_output)
+                else:  # Content lines (0, 2, 4 map to grid lines 0, 1, 2)
+                    content_line = line // 2
+                    row_output = ""
+                    for grid_col in range(3):
+                        grid_num = grid_row * 3 + grid_col
+                        grid_display = self._get_grid_display(grid_num, content_line)
+                        row_output += grid_display
+                        if grid_col < 2:
+                            row_output += "  |  "
+                    print(row_output)
             
             # Add separator between grid rows
             if grid_row < 2:
-                print("=" * 65)
-                print(f"   Grid {grid_row * 3 + 4}      Grid {grid_row * 3 + 5}      Grid {grid_row * 3 + 6}")
-                print()
+                print("-" * 65)
         
         print()
         
@@ -63,28 +68,37 @@ class MegaTicTacToe:
         if self.grid_winners[grid_num]:
             winner = self.grid_winners[grid_num]
             if line == 1:  # Middle line
-                return f"    {winner}     "
+                return f"(     {winner}     )"
             else:
-                return "          "
+                return "(           )"
         
         # Show normal grid content
         start_pos = line * 3
-        display_line = ""
+        display_line = "( "
         for i in range(3):
             pos = start_pos + i
             if grid[pos] == ' ':
                 # Show position number if grid is active or first move
                 if self.active_grid == grid_num or self.first_move:
-                    display_line += f" {pos + 1} "
+                    display_line += f"{pos + 1}"
                 else:
-                    display_line += "   "
+                    display_line += " "
             else:
-                display_line += f" {grid[pos]} "
+                display_line += f"{grid[pos]}"
             
             if i < 2:
-                display_line += "|"
+                display_line += " | "
         
+        display_line += " )"
         return display_line
+    
+    def _get_grid_separator(self, grid_num):
+        """Get the separator line for a grid."""
+        # If grid is won, show empty separator
+        if self.grid_winners[grid_num]:
+            return "(           )"
+        
+        return "( --+---+-- )"
         
     def display_instructions(self):
         """Display game instructions and input format."""
