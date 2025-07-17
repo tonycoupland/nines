@@ -1,8 +1,8 @@
-# Noughts and Crosses (Tic-Tac-Toe) Game
+# MEGA TIC TAC TOE Game
 
 ## Overview
 
-This is a simple console-based implementation of the classic Noughts and Crosses (Tic-Tac-Toe) game in Python. The game is designed for two players to play locally on the same terminal, with a text-based user interface that displays the game board and handles player input.
+This is a console-based implementation of MEGA TIC TAC TOE in Python. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The game is designed for two players to play locally on the same terminal, with a comprehensive text-based user interface that displays all 9 grids simultaneously.
 
 ## User Preferences
 
@@ -24,33 +24,48 @@ The application follows a simple object-oriented design with a single-class arch
 
 ## Key Components
 
-### NoughtsAndCrosses Class
-The main game class that encapsulates all game functionality:
+### MegaTicTacToe Class
+The main game class that encapsulates all mega tic tac toe functionality:
 
 **Game State Management**:
-- `board`: List of 9 elements representing the 3x3 grid
+- `grids`: List of 9 grids, each containing 9 positions (81 total squares)
+- `grid_winners`: Tracks which grids have been won and by whom
 - `current_player`: Tracks whose turn it is ('X' or 'O')
 - `game_over`: Boolean flag for game completion
 - `winner`: Stores the winning player or None
+- `active_grid`: Which grid the next player must play in (None if any grid allowed)
+- `first_move`: Boolean flag for first move (player can choose any grid)
 
 **Display Methods**:
-- `display_board()`: Renders the current game state with position numbers for empty spaces
-- `display_instructions()`: Shows game rules and input format
+- `display_board()`: Renders all 9 grids in a 3x3 layout with clear visual separation
+- `_get_grid_display()`: Helper method to render individual grid lines
+- `display_instructions()`: Shows mega tic tac toe rules and input format
+
+**Game Logic Methods**:
+- `check_grid_winner()`: Checks if a specific grid has been won
+- `check_winner()`: Checks if the overall mega game has been won
+- `is_valid_move()`: Validates moves considering grid restrictions
+- `make_move()`: Places marks and updates game state including active grid logic
 
 **Design Decisions**:
-- Uses a 1D list for the board instead of 2D array for simplicity
-- Position numbering (1-9) for user-friendly input
-- Clear visual separation with borders and formatting
+- Uses nested lists for 9 grids (2D structure for complex game state)
+- Position numbering (1-9) for both grid selection and position within grid
+- Active grid system enforces the core mega tic tac toe rule
+- Won grids display winner symbol instead of individual positions
+- Comprehensive visual layout showing all 81 squares simultaneously
 
 ## Data Flow
 
-1. **Game Initialization**: Creates empty board, sets X as starting player
-2. **Display Phase**: Shows current board state and available positions
-3. **Input Phase**: Player enters position number (1-9)
-4. **Validation Phase**: Checks if move is valid
-5. **Update Phase**: Places player's mark and switches turns
-6. **Win Check Phase**: Evaluates for winning conditions or draw
-7. **Loop**: Returns to display phase unless game is over
+1. **Game Initialization**: Creates 9 empty grids, sets X as starting player, enables first move flexibility
+2. **Display Phase**: Shows all 9 grids with position numbers, indicates active grid restrictions
+3. **Input Phase**: 
+   - First move: Player chooses grid (1-9) then position (1-9)
+   - Subsequent moves: Player restricted to specific grid, chooses position (1-9)
+4. **Validation Phase**: Checks grid availability, position validity, and active grid restrictions
+5. **Update Phase**: Places player's mark, checks for grid wins, determines next active grid
+6. **Win Check Phase**: Evaluates individual grid wins and overall mega game victory
+7. **Active Grid Logic**: Next player must play in grid matching position number of previous move
+8. **Loop**: Returns to display phase unless mega game is won or drawn
 
 ## External Dependencies
 
