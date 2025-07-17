@@ -249,7 +249,10 @@ class MegaTicTacToe:
             if self.first_move or self.active_grid is None:
                 # Player chooses grid first
                 available_grids = [i+1 for i in range(9) if self.grid_winners[i] is None]
-                print(f"Available grids: {available_grids}")
+                if available_grids:
+                    print(f"Available grids: {available_grids}")
+                else:
+                    print("No available grids remaining!")
                 
                 grid_input = input(f"Player {self.current_player}, choose grid (1-9): ").strip()
                 
