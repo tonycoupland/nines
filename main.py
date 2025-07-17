@@ -56,7 +56,7 @@ class MegaTicTacToe:
             
             # Add separator between grid rows
             if grid_row < 2:
-                print("-" * 65)
+                print("-" * 49)
         
         print()
         
