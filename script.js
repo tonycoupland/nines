@@ -19,6 +19,9 @@ class MegaTicTacToe {
         this.gameMessage = document.getElementById('game-message');
         this.resetButton = document.getElementById('reset-game');
         this.playAgainButton = document.getElementById('play-again');
+        this.menuToggle = document.getElementById('menu-toggle');
+        this.mobileMenu = document.getElementById('mobile-menu');
+        this.menuClose = document.getElementById('menu-close');
         
         this.initializeEventListeners();
         this.updateDisplay();
@@ -41,6 +44,22 @@ class MegaTicTacToe {
         this.gameOverModal.addEventListener('click', (e) => {
             if (e.target === this.gameOverModal) {
                 this.gameOverModal.style.display = 'none';
+            }
+        });
+        
+        // Mobile menu controls
+        this.menuToggle.addEventListener('click', () => {
+            this.mobileMenu.classList.add('active');
+        });
+        
+        this.menuClose.addEventListener('click', () => {
+            this.mobileMenu.classList.remove('active');
+        });
+        
+        // Close mobile menu on background click
+        this.mobileMenu.addEventListener('click', (e) => {
+            if (e.target === this.mobileMenu) {
+                this.mobileMenu.classList.remove('active');
             }
         });
     }

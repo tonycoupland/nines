@@ -2,11 +2,40 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>MEGA TIC TAC TOE</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Mobile Menu Toggle -->
+    <button class="menu-toggle" id="menu-toggle">☰</button>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+        <div class="mobile-menu-content">
+            <button class="mobile-menu-close" id="menu-close">×</button>
+            <h3>About MEGA TIC TAC TOE</h3>
+            <div class="rules">
+                <h4>Game Rules:</h4>
+                <ul>
+                    <li>There are 9 grids (numbered 1-9) arranged in a 3x3 layout</li>
+                    <li>Each grid has 9 positions (numbered 1-9)</li>
+                    <li>First player can choose any grid to start</li>
+                    <li>After that, you must play in the grid matching the position number of the previous player's move</li>
+                    <li>Win a grid by getting 3 in a row within that grid</li>
+                    <li>Win the game by getting 3 grids in a row!</li>
+                </ul>
+                <h4>How to Play:</h4>
+                <ul>
+                    <li>Click on any cell to make your move</li>
+                    <li>The game will highlight which grid you can play in next</li>
+                    <li>Green borders show active grids</li>
+                    <li>Grayed out grids are won or inactive</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
     <div class="container">
         <header>
             <h1>🎮 MEGA TIC TAC TOE 🎮</h1>
