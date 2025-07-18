@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a console-based implementation of MEGA TIC TAC TOE in Python. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The game is designed for two players to play locally on the same terminal, with a comprehensive text-based user interface that displays all 9 grids simultaneously.
+This is a web-based implementation of MEGA TIC TAC TOE featuring both a Python console version and a modern web interface. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The web version provides an intuitive click-based interface with visual feedback and responsive design, while maintaining all the complex game mechanics of the original.
 
 ## User Preferences
 
@@ -24,7 +24,18 @@ The application follows a simple object-oriented design with a single-class arch
 
 ## Key Components
 
-### MegaTicTacToe Class
+## Project Structure
+
+### Web Application Files
+- `index.html`: Main HTML structure with 9 grids layout and game interface
+- `style.css`: Responsive CSS styling with visual feedback and animations
+- `script.js`: JavaScript game engine implementing all mega tic tac toe logic
+- `server.py`: Simple Python HTTP server for local development
+
+### Python Console Version
+- `main.py`: Original console-based game implementation
+
+### MegaTicTacToe Class (Python)
 The main game class that encapsulates all mega tic tac toe functionality:
 
 **Game State Management**:

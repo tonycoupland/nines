@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MEGA TIC TAC TOE</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎮 MEGA TIC TAC TOE 🎮</h1>
+            <div class="game-info">
+                <div class="current-player">
+                    <span id="current-player-symbol">❌</span>
+                    <span id="current-player-text">Player X's turn</span>
+                </div>
+                <div id="active-grid-info" class="active-grid-info">
+                    🎯 Player X can choose any grid
+                </div>
+            </div>
+        </header>
+
+        <div class="game-board" id="game-board">
+            <!-- Grid 1-3 -->
+            <div class="grid-row">
+                <div class="grid" id="grid-0" data-grid="0">
+                    <div class="grid-header">Grid 1</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="0" data-position="0">1</div>
+                        <div class="cell" data-grid="0" data-position="1">2</div>
+                        <div class="cell" data-grid="0" data-position="2">3</div>
+                        <div class="cell" data-grid="0" data-position="3">4</div>
+                        <div class="cell" data-grid="0" data-position="4">5</div>
+                        <div class="cell" data-grid="0" data-position="5">6</div>
+                        <div class="cell" data-grid="0" data-position="6">7</div>
+                        <div class="cell" data-grid="0" data-position="7">8</div>
+                        <div class="cell" data-grid="0" data-position="8">9</div>
+                    </div>
+                </div>
+                <div class="grid" id="grid-1" data-grid="1">
+                    <div class="grid-header">Grid 2</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="1" data-position="0">1</div>
+                        <div class="cell" data-grid="1" data-position="1">2</div>
+                        <div class="cell" data-grid="1" data-position="2">3</div>
+                        <div class="cell" data-grid="1" data-position="3">4</div>
+                        <div class="cell" data-grid="1" data-position="4">5</div>
+                        <div class="cell" data-grid="1" data-position="5">6</div>
+                        <div class="cell" data-grid="1" data-position="6">7</div>
+                        <div class="cell" data-grid="1" data-position="7">8</div>
+                        <div class="cell" data-grid="1" data-position="8">9</div>
+                    </div>
+                </div>
+                <div class="grid" id="grid-2" data-grid="2">
+                    <div class="grid-header">Grid 3</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="2" data-position="0">1</div>
+                        <div class="cell" data-grid="2" data-position="1">2</div>
+                        <div class="cell" data-grid="2" data-position="2">3</div>
+                        <div class="cell" data-grid="2" data-position="3">4</div>
+                        <div class="cell" data-grid="2" data-position="4">5</div>
+                        <div class="cell" data-grid="2" data-position="5">6</div>
+                        <div class="cell" data-grid="2" data-position="6">7</div>
+                        <div class="cell" data-grid="2" data-position="7">8</div>
+                        <div class="cell" data-grid="2" data-position="8">9</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid 4-6 -->
+            <div class="grid-row">
+                <div class="grid" id="grid-3" data-grid="3">
+                    <div class="grid-header">Grid 4</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="3" data-position="0">1</div>
+                        <div class="cell" data-grid="3" data-position="1">2</div>
+                        <div class="cell" data-grid="3" data-position="2">3</div>
+                        <div class="cell" data-grid="3" data-position="3">4</div>
+                        <div class="cell" data-grid="3" data-position="4">5</div>
+                        <div class="cell" data-grid="3" data-position="5">6</div>
+                        <div class="cell" data-grid="3" data-position="6">7</div>
+                        <div class="cell" data-grid="3" data-position="7">8</div>
+                        <div class="cell" data-grid="3" data-position="8">9</div>
+                    </div>
+                </div>
+                <div class="grid" id="grid-4" data-grid="4">
+                    <div class="grid-header">Grid 5</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="4" data-position="0">1</div>
+                        <div class="cell" data-grid="4" data-position="1">2</div>
+                        <div class="cell" data-grid="4" data-position="2">3</div>
+                        <div class="cell" data-grid="4" data-position="3">4</div>
+                        <div class="cell" data-grid="4" data-position="4">5</div>
+                        <div class="cell" data-grid="4" data-position="5">6</div>
+                        <div class="cell" data-grid="4" data-position="6">7</div>
+                        <div class="cell" data-grid="4" data-position="7">8</div>
+                        <div class="cell" data-grid="4" data-position="8">9</div>
+                    </div>
+                </div>
+                <div class="grid" id="grid-5" data-grid="5">
+                    <div class="grid-header">Grid 6</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="5" data-position="0">1</div>
+                        <div class="cell" data-grid="5" data-position="1">2</div>
+                        <div class="cell" data-grid="5" data-position="2">3</div>
+                        <div class="cell" data-grid="5" data-position="3">4</div>
+                        <div class="cell" data-grid="5" data-position="4">5</div>
+                        <div class="cell" data-grid="5" data-position="5">6</div>
+                        <div class="cell" data-grid="5" data-position="6">7</div>
+                        <div class="cell" data-grid="5" data-position="7">8</div>
+                        <div class="cell" data-grid="5" data-position="8">9</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid 7-9 -->
+            <div class="grid-row">
+                <div class="grid" id="grid-6" data-grid="6">
+                    <div class="grid-header">Grid 7</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="6" data-position="0">1</div>
+                        <div class="cell" data-grid="6" data-position="1">2</div>
+                        <div class="cell" data-grid="6" data-position="2">3</div>
+                        <div class="cell" data-grid="6" data-position="3">4</div>
+                        <div class="cell" data-grid="6" data-position="4">5</div>
+                        <div class="cell" data-grid="6" data-position="5">6</div>
+                        <div class="cell" data-grid="6" data-position="6">7</div>
+                        <div class="cell" data-grid="6" data-position="7">8</div>
+                        <div class="cell" data-grid="6" data-position="8">9</div>
+                    </div>
+                </div>
+                <div class="grid" id="grid-7" data-grid="7">
+                    <div class="grid-header">Grid 8</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="7" data-position="0">1</div>
+                        <div class="cell" data-grid="7" data-position="1">2</div>
+                        <div class="cell" data-grid="7" data-position="2">3</div>
+                        <div class="cell" data-grid="7" data-position="3">4</div>
+                        <div class="cell" data-grid="7" data-position="4">5</div>
+                        <div class="cell" data-grid="7" data-position="5">6</div>
+                        <div class="cell" data-grid="7" data-position="6">7</div>
+                        <div class="cell" data-grid="7" data-position="7">8</div>
+                        <div class="cell" data-grid="7" data-position="8">9</div>
+                    </div>
+                </div>
+                <div class="grid" id="grid-8" data-grid="8">
+                    <div class="grid-header">Grid 9</div>
+                    <div class="mini-grid">
+                        <div class="cell" data-grid="8" data-position="0">1</div>
+                        <div class="cell" data-grid="8" data-position="1">2</div>
+                        <div class="cell" data-grid="8" data-position="2">3</div>
+                        <div class="cell" data-grid="8" data-position="3">4</div>
+                        <div class="cell" data-grid="8" data-position="4">5</div>
+                        <div class="cell" data-grid="8" data-position="5">6</div>
+                        <div class="cell" data-grid="8" data-position="6">7</div>
+                        <div class="cell" data-grid="8" data-position="7">8</div>
+                        <div class="cell" data-grid="8" data-position="8">9</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="game-controls">
+            <button id="reset-game" class="btn">New Game</button>
+        </div>
+
+        <div class="rules">
+            <h3>Game Rules:</h3>
+            <ul>
+                <li>There are 9 grids (numbered 1-9) arranged in a 3x3 layout</li>
+                <li>Each grid has 9 positions (numbered 1-9)</li>
+                <li>First player can choose any grid to start</li>
+                <li>After that, you must play in the grid matching the position number of the previous player's move</li>
+                <li>Win a grid by getting 3 in a row within that grid</li>
+                <li>Win the game by getting 3 grids in a row!</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Game Over Modal -->
+    <div id="game-over-modal" class="modal">
+        <div class="modal-content">
+            <h2 id="game-result"></h2>
+            <p id="game-message"></p>
+            <button id="play-again" class="btn">Play Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
