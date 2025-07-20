@@ -24,6 +24,14 @@ args = "Reverb WebSocket"
 task = "workflow.run"
 args = "Phaser Frontend"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Build Production"
+
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Build Development"
+
 [[workflows.workflow]]
 name = "Laravel Backend"
 author = "agent"
@@ -50,6 +58,22 @@ author = "agent"
 task = "shell.exec"
 args = "./node_modules/.bin/webpack serve --config webpack.config.cjs --mode=development --host=0.0.0.0 --port=3000"
 waitForPort = 3000
+
+[[workflows.workflow]]
+name = "Build Production"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx webpack --config webpack.config.cjs --mode=production"
+
+[[workflows.workflow]]
+name = "Build Development"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx webpack --config webpack.config.cjs --mode=development"
 
 [[ports]]
 localPort = 3000

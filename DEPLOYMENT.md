@@ -35,6 +35,9 @@ composer install --optimize-autoloader --no-dev
 
 # Install Node.js dependencies
 npm install
+
+# Build frontend assets
+npx webpack --config webpack.config.cjs --mode=production
 ```
 
 ### 2. Environment Configuration
@@ -169,6 +172,20 @@ REVERB_SCHEME=https
 
 ### Logs:
 Check Laravel logs at `storage/logs/laravel.log`
+
+## Build Commands
+
+### Frontend Build
+```bash
+# Production build (optimized)
+npx webpack --config webpack.config.cjs --mode=production
+
+# Development build (unminified)
+npx webpack --config webpack.config.cjs --mode=development
+
+# Development server with hot reload
+npx webpack serve --config webpack.config.cjs --mode=development --host=0.0.0.0 --port=3000
+```
 
 ## Features
 
