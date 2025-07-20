@@ -36,7 +36,7 @@ composer install --optimize-autoloader --no-dev
 # Install Node.js dependencies
 npm install
 
-# Build frontend assets
+# Build frontend assets (outputs to public/ directory)
 npx webpack --config webpack.config.cjs --mode=production
 ```
 
@@ -177,15 +177,17 @@ Check Laravel logs at `storage/logs/laravel.log`
 
 ### Frontend Build
 ```bash
-# Production build (optimized)
+# Production build (optimized, outputs to public/ directory)
 npx webpack --config webpack.config.cjs --mode=production
 
-# Development build (unminified)
+# Development build (unminified, outputs to public/ directory)
 npx webpack --config webpack.config.cjs --mode=development
 
 # Development server with hot reload
 npx webpack serve --config webpack.config.cjs --mode=development --host=0.0.0.0 --port=3000
 ```
+
+**Note**: Webpack now outputs directly to the `public/` directory so static assets are served correctly by Laravel.
 
 ## Features
 

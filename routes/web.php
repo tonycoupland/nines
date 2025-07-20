@@ -3,13 +3,14 @@
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return response()->file(base_path('dist/index.html'));
+    return response()->file(public_path('index.html'));
 });
 
 Route::get('/join/{code}', function ($code) {
-    return response()->file(base_path('dist/index.html'));
+    return response()->file(public_path('index.html'));
 });
 
+// Exclude static assets from catch-all route
 Route::get('/{any}', function () {
-    return response()->file(base_path('dist/index.html'));
-})->where('any', '.*');
+    return response()->file(public_path('index.html'));
+})->where('any', '^(?!.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)).*$');

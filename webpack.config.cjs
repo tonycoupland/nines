@@ -6,8 +6,9 @@ module.exports = {
     entry: './src/main.js',
     output: {
         filename: 'bundle.js',
-        path: path.resolve(__dirname, 'dist'),
-        clean: true
+        path: path.resolve(__dirname, 'public'),
+        clean: false, // Don't clean public directory (has Laravel files)
+        publicPath: '/',
     },
     module: {
         rules: [
@@ -36,7 +37,7 @@ module.exports = {
         })
     ],
     devServer: {
-        static: './dist',
+        static: './public',
         port: 3000,
         hot: true,
         host: '0.0.0.0',
