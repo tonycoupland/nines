@@ -8,6 +8,16 @@ This is a comprehensive implementation of **Nines** featuring multiple versions:
 
 Preferred communication style: Simple, everyday language.
 
+## Recent Changes
+
+**July 20, 2025:**
+- ✓ Removed Cordova mobile deployment complexity per user request
+- ✓ Simplified to web-only deployment with standard Laravel hosting
+- ✓ Updated composer.json to be valid for web hosting platforms
+- ✓ Created comprehensive deployment guide (DEPLOYMENT.md)
+- ✓ Verified all services running correctly (Laravel backend, Reverb WebSocket, Phaser frontend)
+- ✓ Confirmed API endpoints working and game ready for web deployment
+
 ## System Architecture
 
 The current active version uses **Full-Stack Real-time Multiplayer Architecture**:
@@ -24,7 +34,7 @@ The current active version uses **Full-Stack Real-time Multiplayer Architecture*
 - **Game Logic**: Shared between frontend and backend for validation
 - **Database**: PostgreSQL for game state persistence
 - **Features**: QR code generation, shareable game codes, responsive design
-- **Mobile Support**: Apache Cordova for iOS/Android native apps
+- **Web Deployment**: Standard Laravel web hosting deployment
 
 **Backend Services**:
 - **Laravel Backend** (Port 8000): REST API for game management
@@ -52,7 +62,7 @@ The current active version uses **Full-Stack Real-time Multiplayer Architecture*
 - **Mobile Optimized**: Touch-friendly interface, responsive design
 - **QR Code Sharing**: Instant game sharing via QR codes
 - **Hardware Acceleration**: Phaser.js WebGL/Canvas rendering
-- **Cross-Platform**: Web browsers + native iOS/Android apps via Cordova
+- **Cross-Platform**: All modern web browsers on desktop and mobile
 
 ## Key Components
 
@@ -75,9 +85,9 @@ The current active version uses **Full-Stack Real-time Multiplayer Architecture*
 - `backend/routes/web.php`: Frontend serving routes
 - `backend/.env`: Configuration with database and websocket settings
 
-**Mobile Deployment:**
-- `cordova-app/config.xml`: Cordova configuration for native apps
-- `CORDOVA_DEPLOYMENT.md`: Complete mobile deployment guide
+**Deployment:**
+- Standard Laravel web application for hosting platforms
+- All backend services configured for production deployment
 
 ### Legacy Versions (Archived)
 - `legacy-versions/`: Contains previous implementations for reference

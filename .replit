@@ -52,10 +52,6 @@ args = "cd backend && php artisan reverb:start --host=0.0.0.0 --port=8080 --debu
 waitForPort = 8080
 
 [[ports]]
-localPort = 3000
-externalPort = 3000
-
-[[ports]]
 localPort = 5000
 externalPort = 80
 
