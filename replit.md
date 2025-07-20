@@ -10,37 +10,43 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-The application follows a simple object-oriented design with a single-class architecture:
+The current active version uses the **Phaser.js Game Engine** with a **Scene-based architecture**:
 
-**Architecture Pattern**: Monolithic class-based design
-- **Rationale**: For a simple game like Tic-Tac-Toe, a single class contains all the necessary game logic without overcomplicating the structure
-- **Pros**: Easy to understand, minimal complexity, all game state in one place
-- **Cons**: Limited extensibility for more complex features
+**Architecture Pattern**: Game Engine Scene-based Design
+- **Rationale**: Phaser.js provides professional game development patterns with hardware acceleration, mobile optimization, and robust input handling
+- **Pros**: Hardware-accelerated graphics, mobile-first design, professional game development workflow, native app deployment
+- **Cons**: Larger bundle size (~1.15MB), more complex setup than vanilla JavaScript
 
-**Programming Language**: Python 3
-- **Rationale**: Python's simplicity and readability make it ideal for a straightforward console game
-- **Pros**: Easy to read and maintain, built-in data structures work well for game state
-- **Cons**: Not the fastest language, but performance isn't critical for this use case
+**Technology Stack**: 
+- **Game Engine**: Phaser.js 3.90.0 (WebGL/Canvas rendering)
+- **Build Tool**: Webpack 5 with development server and hot reloading
+- **Mobile Deployment**: Apache Cordova for iOS/Android packaging
+- **Development**: ES6+ JavaScript with modern development workflow
+
+**Legacy Architectures** (Archived):
+- **Python Console**: Simple class-based design for terminal gameplay
+- **Vanilla Web**: DOM-based implementation with responsive design
 
 ## Key Components
 
 ## Project Structure
 
-### Phaser.js Game Engine Version (Latest)
+### Phaser.js Game Engine Version (Active)
 - `src/main.js`: Complete Phaser.js game implementation with all MEGA TIC TAC TOE mechanics
 - `src/index.html`: Mobile-optimized HTML template with Cordova support
+- `src/assets/`: Game assets directory (currently empty, ready for icons/sounds)
 - `webpack.config.js`: Webpack build configuration for development and production
 - `cordova-app/config.xml`: Cordova configuration for iOS/Android deployment
 - `CORDOVA_DEPLOYMENT.md`: Complete mobile deployment guide
+- `dist/`: Built production files (auto-generated)
 
-### Web Application Files (Original)
-- `index.html`: Main HTML structure with 9 grids layout and game interface
-- `style.css`: Responsive CSS styling with visual feedback and animations
-- `script.js`: JavaScript game engine implementing all mega tic tac toe logic
-- `server.py`: Simple Python HTTP server for local development
-
-### Python Console Version
-- `main.py`: Original console-based game implementation
+### Legacy Versions (Archived)
+- `legacy-versions/`: Contains previous implementations for reference
+  - `main.py`: Original Python console version
+  - `index.html.backup`: Original web HTML interface
+  - `style.css.backup`: Original web CSS styling
+  - `script.js.backup`: Original vanilla JavaScript implementation
+  - `server.py.backup`: Simple Python HTTP server
 
 ### MegaTicTacToe Class (Python)
 The main game class that encapsulates all mega tic tac toe functionality:
