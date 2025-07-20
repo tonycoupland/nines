@@ -40,7 +40,15 @@ module.exports = {
         port: 5000,
         hot: true,
         host: '0.0.0.0',
-        allowedHosts: 'all'
+        allowedHosts: 'all',
+        proxy: [
+            {
+                context: ['/api'],
+                target: 'http://localhost:8000',
+                changeOrigin: true,
+            }
+        ],
+        historyApiFallback: true
     },
     resolve: {
         extensions: ['.js']

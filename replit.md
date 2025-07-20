@@ -1,8 +1,8 @@
-# MEGA TIC TAC TOE Game
+# Nines Game
 
 ## Overview
 
-This is a comprehensive implementation of MEGA TIC TAC TOE featuring multiple versions: a Python console version, a modern web interface, and now a **Phaser.js game engine** version packaged with **Apache Cordova for iOS/Android deployment**. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The Phaser.js version provides hardware-accelerated graphics, mobile-optimized touch controls, and native app deployment capabilities while maintaining all the complex game mechanics of the original.
+This is a comprehensive implementation of **Nines** featuring multiple versions: a Python console version, a modern web interface, and now a **Phaser.js game engine** version with **Laravel backend and real-time multiplayer capabilities**. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The current version provides hardware-accelerated graphics, mobile-optimized touch controls, websocket communication for real-time multiplayer, and database storage for game persistence.
 
 ## User Preferences
 
@@ -10,35 +10,74 @@ Preferred communication style: Simple, everyday language.
 
 ## System Architecture
 
-The current active version uses the **Phaser.js Game Engine** with a **Scene-based architecture**:
+The current active version uses **Full-Stack Real-time Multiplayer Architecture**:
 
-**Architecture Pattern**: Game Engine Scene-based Design
-- **Rationale**: Phaser.js provides professional game development patterns with hardware acceleration, mobile optimization, and robust input handling
-- **Pros**: Hardware-accelerated graphics, mobile-first design, professional game development workflow, native app deployment
-- **Cons**: Larger bundle size (~1.15MB), more complex setup than vanilla JavaScript
+**Architecture Pattern**: Client-Server with Real-time Communication
+- **Rationale**: Enables online multiplayer gameplay with real-time synchronization, game persistence, and scalable user sessions
+- **Pros**: Real-time multiplayer, database persistence, QR code sharing, mobile-optimized, professional game development
+- **Cons**: More complex setup, requires backend infrastructure, higher resource usage
 
 **Technology Stack**: 
-- **Game Engine**: Phaser.js 3.90.0 (WebGL/Canvas rendering)
-- **Build Tool**: Webpack 5 with development server and hot reloading
-- **Mobile Deployment**: Apache Cordova for iOS/Android packaging
-- **Development**: ES6+ JavaScript with modern development workflow
+- **Frontend**: Phaser.js 3.90.0 game engine with Webpack 5 build system
+- **Backend**: Laravel 12.x PHP framework with PostgreSQL database
+- **Real-time Communication**: Laravel Reverb WebSocket server
+- **Game Logic**: Shared between frontend and backend for validation
+- **Database**: PostgreSQL for game state persistence
+- **Features**: QR code generation, shareable game codes, responsive design
+- **Mobile Support**: Apache Cordova for iOS/Android native apps
+
+**Backend Services**:
+- **Laravel Backend** (Port 8000): REST API for game management
+- **Reverb WebSocket** (Port 8080): Real-time game state synchronization
+- **PostgreSQL Database**: Game state persistence and player management
 
 **Legacy Architectures** (Archived):
-- **Python Console**: Simple class-based design for terminal gameplay
+- **Python Console**: Simple class-based design for terminal gameplay  
 - **Vanilla Web**: DOM-based implementation with responsive design
+
+## Key Features
+
+**Multiplayer Modes:**
+- **Local Game**: Traditional offline gameplay for two players on same device
+- **Remote Game Creation**: Host creates game with shareable 6-character code and QR code
+- **Remote Game Joining**: Players join using game codes or QR code scanning
+
+**Real-time Features:**
+- **Live Game Synchronization**: All moves instantly synchronized between players
+- **Game State Persistence**: Games saved to database and resume across sessions  
+- **Connection Status**: Visual indicators for online/offline status
+- **Turn Management**: Clear visual feedback for whose turn it is
+
+**Technical Features:**
+- **Mobile Optimized**: Touch-friendly interface, responsive design
+- **QR Code Sharing**: Instant game sharing via QR codes
+- **Hardware Acceleration**: Phaser.js WebGL/Canvas rendering
+- **Cross-Platform**: Web browsers + native iOS/Android apps via Cordova
 
 ## Key Components
 
 ## Project Structure
 
-### Phaser.js Game Engine Version (Active)
-- `src/main.js`: Complete Phaser.js game implementation with all MEGA TIC TAC TOE mechanics
-- `src/index.html`: Mobile-optimized HTML template with Cordova support
-- `src/assets/`: Game assets directory (currently empty, ready for icons/sounds)
-- `webpack.config.js`: Webpack build configuration for development and production
-- `cordova-app/config.xml`: Cordova configuration for iOS/Android deployment
-- `CORDOVA_DEPLOYMENT.md`: Complete mobile deployment guide
+### Multiplayer Nines Game (Active)
+
+**Frontend (Phaser.js):**
+- `src/main.js`: Complete multiplayer game with MenuScene and GameScene
+- `src/index.html`: Mobile-optimized HTML with real-time features
+- `webpack.config.js`: Webpack with API proxy configuration
 - `dist/`: Built production files (auto-generated)
+
+**Backend (Laravel):**
+- `backend/app/Models/Game.php`: Game model with state management
+- `backend/app/Http/Controllers/GameController.php`: REST API endpoints
+- `backend/app/Events/GameUpdated.php`: WebSocket broadcast events
+- `backend/database/migrations/`: Database schema for games table
+- `backend/routes/api.php`: API routes for game operations
+- `backend/routes/web.php`: Frontend serving routes
+- `backend/.env`: Configuration with database and websocket settings
+
+**Mobile Deployment:**
+- `cordova-app/config.xml`: Cordova configuration for native apps
+- `CORDOVA_DEPLOYMENT.md`: Complete mobile deployment guide
 
 ### Legacy Versions (Archived)
 - `legacy-versions/`: Contains previous implementations for reference
