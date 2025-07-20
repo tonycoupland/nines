@@ -12,14 +12,13 @@ This guide covers deploying the Nines multiplayer game to standard Laravel web h
 ## Project Structure
 
 ```
-├── backend/              # Laravel application
-│   ├── app/             # Application code
-│   ├── config/          # Configuration files
-│   ├── database/        # Migrations and seeders
-│   ├── public/          # Web server document root
-│   ├── routes/          # Route definitions
-│   ├── composer.json    # PHP dependencies
-│   └── .env.example     # Environment template
+├── app/                 # Laravel application code
+├── config/              # Laravel configuration files
+├── database/            # Migrations and seeders
+├── public/              # Web server document root
+├── routes/              # Laravel route definitions
+├── composer.json        # PHP dependencies (root level for hosting)
+├── .env.example         # Environment template
 ├── src/                 # Phaser.js frontend source
 ├── dist/                # Built frontend assets
 ├── webpack.config.js    # Frontend build configuration
@@ -31,12 +30,10 @@ This guide covers deploying the Nines multiplayer game to standard Laravel web h
 ### 1. Clone and Install Dependencies
 
 ```bash
-# Install PHP dependencies
-cd backend
+# Install PHP dependencies (composer.json is now in root)
 composer install --optimize-autoloader --no-dev
 
-# Install Node.js dependencies (in project root)
-cd ..
+# Install Node.js dependencies
 npm install
 ```
 
@@ -44,7 +41,6 @@ npm install
 
 ```bash
 # Copy environment template
-cd backend
 cp .env.example .env
 
 # Generate application key
@@ -76,7 +72,7 @@ php artisan cache:clear
 
 ### 5. Web Server Configuration
 
-Point your web server's document root to `backend/public/`
+Point your web server's document root to `public/`
 
 #### Apache (.htaccess already included)
 No additional configuration needed.
@@ -86,7 +82,7 @@ No additional configuration needed.
 server {
     listen 80;
     server_name yourdomain.com;
-    root /path/to/your/project/backend/public;
+    root /path/to/your/project/public;
 
     add_header X-Frame-Options "SAMEORIGIN";
     add_header X-Content-Type-Options "nosniff";
@@ -122,7 +118,6 @@ For production, you'll need to run the Reverb WebSocket server:
 
 ```bash
 # Start Reverb server (in background/process manager)
-cd backend
 php artisan reverb:start --host=0.0.0.0 --port=8080
 ```
 
@@ -132,8 +127,8 @@ php artisan reverb:start --host=0.0.0.0 --port=8080
 
 Ensure the following directories are writable:
 ```bash
-chmod -R 755 backend/storage
-chmod -R 755 backend/bootstrap/cache
+chmod -R 755 storage
+chmod -R 755 bootstrap/cache
 ```
 
 ## Environment Variables
@@ -173,7 +168,7 @@ REVERB_SCHEME=https
 4. **WebSocket Issues**: Check if your hosting provider supports WebSocket connections
 
 ### Logs:
-Check Laravel logs at `backend/storage/logs/laravel.log`
+Check Laravel logs at `storage/logs/laravel.log`
 
 ## Features
 

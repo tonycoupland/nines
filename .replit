@@ -14,24 +14,15 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Phaser MEGA TIC TAC TOE"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Laravel Backend"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
 args = "Reverb WebSocket"
 
-[[workflows.workflow]]
-name = "Phaser MEGA TIC TAC TOE"
-author = "agent"
-
 [[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./node_modules/.bin/webpack serve --mode=development --host=0.0.0.0 --port=5000"
-waitForPort = 5000
+task = "workflow.run"
+args = "Phaser Frontend"
 
 [[workflows.workflow]]
 name = "Laravel Backend"
@@ -39,8 +30,8 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd backend && php artisan serve --host=0.0.0.0 --port=8000"
-waitForPort = 8000
+args = "php artisan serve --host=0.0.0.0 --port=8080"
+waitForPort = 8080
 
 [[workflows.workflow]]
 name = "Reverb WebSocket"
@@ -48,8 +39,21 @@ author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "cd backend && php artisan reverb:start --host=0.0.0.0 --port=8080 --debug"
-waitForPort = 8080
+args = "php artisan reverb:start --host=0.0.0.0 --port=8081"
+waitForPort = 8081
+
+[[workflows.workflow]]
+name = "Phaser Frontend"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "./node_modules/.bin/webpack serve --config webpack.config.cjs --mode=development --host=0.0.0.0 --port=3000"
+waitForPort = 3000
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000
@@ -62,3 +66,7 @@ externalPort = 8000
 [[ports]]
 localPort = 8080
 externalPort = 8080
+
+[[ports]]
+localPort = 8081
+externalPort = 8081

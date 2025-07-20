@@ -13,10 +13,11 @@ Preferred communication style: Simple, everyday language.
 **July 20, 2025:**
 - ✓ Removed Cordova mobile deployment complexity per user request
 - ✓ Simplified to web-only deployment with standard Laravel hosting
-- ✓ Updated composer.json to be valid for web hosting platforms
+- ✓ Restructured project: moved Laravel files from backend/ to root level
+- ✓ Placed composer.json in root directory for hosting provider compatibility
+- ✓ Updated all paths and configuration for new structure
 - ✓ Created comprehensive deployment guide (DEPLOYMENT.md)
-- ✓ Verified all services running correctly (Laravel backend, Reverb WebSocket, Phaser frontend)
-- ✓ Confirmed API endpoints working and game ready for web deployment
+- ✓ Cleaned up corrupted composer files from root directory
 
 ## System Architecture
 
@@ -37,8 +38,8 @@ The current active version uses **Full-Stack Real-time Multiplayer Architecture*
 - **Web Deployment**: Standard Laravel web hosting deployment
 
 **Backend Services**:
-- **Laravel Backend** (Port 8000): REST API for game management
-- **Reverb WebSocket** (Port 8080): Real-time game state synchronization
+- **Laravel Backend** (Port 8080): REST API for game management (moved for hosting compatibility)
+- **Reverb WebSocket** (Port 8081): Real-time game state synchronization
 - **PostgreSQL Database**: Game state persistence and player management
 
 **Legacy Architectures** (Archived):
@@ -76,17 +77,19 @@ The current active version uses **Full-Stack Real-time Multiplayer Architecture*
 - `webpack.config.js`: Webpack with API proxy configuration
 - `dist/`: Built production files (auto-generated)
 
-**Backend (Laravel):**
-- `backend/app/Models/Game.php`: Game model with state management
-- `backend/app/Http/Controllers/GameController.php`: REST API endpoints
-- `backend/app/Events/GameUpdated.php`: WebSocket broadcast events
-- `backend/database/migrations/`: Database schema for games table
-- `backend/routes/api.php`: API routes for game operations
-- `backend/routes/web.php`: Frontend serving routes
-- `backend/.env`: Configuration with database and websocket settings
+**Backend (Laravel - Root Level):**
+- `composer.json`: PHP dependencies in root for hosting compatibility
+- `app/Models/Game.php`: Game model with state management
+- `app/Http/Controllers/GameController.php`: REST API endpoints
+- `app/Events/GameUpdated.php`: WebSocket broadcast events
+- `database/migrations/`: Database schema for games table
+- `routes/api.php`: API routes for game operations
+- `routes/web.php`: Frontend serving routes
+- `.env.example`: Configuration template with database and websocket settings
 
 **Deployment:**
-- Standard Laravel web application for hosting platforms
+- Laravel application restructured with composer.json in root for hosting compatibility
+- Web server document root points to `public/` directory
 - All backend services configured for production deployment
 
 ### Legacy Versions (Archived)
