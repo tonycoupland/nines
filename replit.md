@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a web-based implementation of MEGA TIC TAC TOE featuring both a Python console version and a modern web interface. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The web version provides an intuitive click-based interface with visual feedback and responsive design, while maintaining all the complex game mechanics of the original.
+This is a comprehensive implementation of MEGA TIC TAC TOE featuring multiple versions: a Python console version, a modern web interface, and now a **Phaser.js game engine** version packaged with **Apache Cordova for iOS/Android deployment**. The game features 9 interconnected grids (81 squares total) where players must strategically place their marks. The Phaser.js version provides hardware-accelerated graphics, mobile-optimized touch controls, and native app deployment capabilities while maintaining all the complex game mechanics of the original.
 
 ## User Preferences
 
@@ -26,7 +26,14 @@ The application follows a simple object-oriented design with a single-class arch
 
 ## Project Structure
 
-### Web Application Files
+### Phaser.js Game Engine Version (Latest)
+- `src/main.js`: Complete Phaser.js game implementation with all MEGA TIC TAC TOE mechanics
+- `src/index.html`: Mobile-optimized HTML template with Cordova support
+- `webpack.config.js`: Webpack build configuration for development and production
+- `cordova-app/config.xml`: Cordova configuration for iOS/Android deployment
+- `CORDOVA_DEPLOYMENT.md`: Complete mobile deployment guide
+
+### Web Application Files (Original)
 - `index.html`: Main HTML structure with 9 grids layout and game interface
 - `style.css`: Responsive CSS styling with visual feedback and animations
 - `script.js`: JavaScript game engine implementing all mega tic tac toe logic

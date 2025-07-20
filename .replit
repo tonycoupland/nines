@@ -1,7 +1,8 @@
-modules = ["python-3.11"]
+modules = ["python-3.11", "nodejs-20"]
 
 [nix]
 channel = "stable-24_05"
+packages = ["nodejs", "cordova"]
 
 [workflows]
 runButton = "Project"
@@ -17,7 +18,7 @@ args = "main"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "MEGA TIC TAC TOE Web App"
+args = "Phaser MEGA TIC TAC TOE"
 
 [[workflows.workflow]]
 name = "main"
@@ -28,13 +29,17 @@ task = "shell.exec"
 args = "python main.py"
 
 [[workflows.workflow]]
-name = "MEGA TIC TAC TOE Web App"
+name = "Phaser MEGA TIC TAC TOE"
 author = "agent"
 
 [[workflows.workflow.tasks]]
 task = "shell.exec"
-args = "python server.py"
+args = "./node_modules/.bin/webpack serve --mode=development --host=0.0.0.0 --port=5000"
 waitForPort = 5000
+
+[[ports]]
+localPort = 3000
+externalPort = 3000
 
 [[ports]]
 localPort = 5000
