@@ -164,8 +164,16 @@ function sendMoveToServer(gridIndex, cellIndex) {
         },
         body: JSON.stringify({
             grid: gridIndex,
-            cell: cellIndex,
-            player_id: gameState.playerId
+            position: cellIndex,
+            player_id: gameState.playerId,
+            game_state: {
+                grids: gameState.grids,
+                currentPlayer: gameState.currentPlayer,
+                activeGrid: gameState.activeGrid,
+                gridWinners: gameState.gridWinners,
+                gameWon: gameState.gameWon,
+                winner: gameState.winner
+            }
         })
     }).catch(error => {
         console.error('Error sending move:', error);
@@ -180,7 +188,14 @@ function updateDisplay() {
         currentPlayerDisplay.textContent = `🎉 Player ${gameState.winner} Wins!`;
     } else {
         const symbol = gameState.currentPlayer === 'X' ? '❌' : '⭕';
-        currentPlayerDisplay.textContent = `${symbol} Player ${gameState.currentPlayer}'s turn`;
+        if (gameState.isOnline) {
+            const isMyTurn = gameState.currentPlayer === gameState.mySymbol;
+            currentPlayerDisplay.textContent = isMyTurn 
+                ? `${symbol} Your turn (${gameState.mySymbol})` 
+                : `${symbol} Opponent's turn (${gameState.currentPlayer})`;
+        } else {
+            currentPlayerDisplay.textContent = `${symbol} Player ${gameState.currentPlayer}'s turn`;
+        }
     }
     
     // Update game board
@@ -395,17 +410,19 @@ function handleGameUpdate(data) {
     console.log('Game update received:', data);
     
     // Update game state from server
-    if (data.game) {
-        const serverState = data.game.state;
-        if (serverState) {
-            gameState.grids = serverState.grids || gameState.grids;
-            gameState.currentPlayer = serverState.currentPlayer || gameState.currentPlayer;
-            gameState.activeGrid = serverState.activeGrid;
-            gameState.gridWinners = serverState.gridWinners || gameState.gridWinners;
-            gameState.gameWon = serverState.gameWon || false;
-            gameState.winner = serverState.winner;
-            
-            updateDisplay();
+    if (data.game && data.game.game_state) {
+        const serverState = data.game.game_state;
+        gameState.grids = serverState.grids || gameState.grids;
+        gameState.currentPlayer = serverState.currentPlayer || gameState.currentPlayer;
+        gameState.activeGrid = serverState.activeGrid;
+        gameState.gridWinners = serverState.gridWinners || gameState.gridWinners;
+        gameState.gameWon = serverState.gameWon || false;
+        gameState.winner = serverState.winner;
+        
+        updateDisplay();
+        
+        if (gameState.gameWon) {
+            showMessage(`🎉 Player ${gameState.winner} wins the game!`, 'success');
         }
     }
 }

@@ -17,15 +17,19 @@ class GameUpdated implements ShouldBroadcast
 
     public $game;
 
-    public function __construct(Game $game)
+    public function __construct($game)
     {
         $this->game = $game;
     }
 
     public function broadcastOn(): array
     {
+        $gameCode = is_object($this->game) && isset($this->game->code) 
+            ? $this->game->code 
+            : $this->game['game']['code'];
+            
         return [
-            new Channel("game.{$this->game->code}")
+            new Channel("game.{$gameCode}")
         ];
     }
 

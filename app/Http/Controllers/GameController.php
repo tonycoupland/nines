@@ -61,42 +61,33 @@ class GameController extends Controller
         $playerId = $request->input('player_id');
         $grid = $request->input('grid');
         $position = $request->input('position');
+        $gameState = $request->input('game_state');
 
-        $game = Game::where('code', $code)->first();
+        // For now, create a simple response and broadcast the move to all players in this game
+        $gameData = [
+            'game' => [
+                'code' => strtoupper($code),
+                'game_state' => $gameState,
+                'last_move' => [
+                    'grid' => $grid,
+                    'position' => $position,
+                    'player_id' => $playerId
+                ]
+            ]
+        ];
 
-        if (!$game || !$game->isPlayerInGame($playerId)) {
-            return response()->json(['success' => false, 'message' => 'Game not found or unauthorized'], 404);
+        // Broadcast to all players in this game channel
+        try {
+            GameUpdated::dispatch($gameData);
+        } catch (\Exception $e) {
+            // Continue without broadcasting if there's an issue
+            error_log('Broadcasting failed: ' . $e->getMessage());
         }
 
-        if ($game->status !== 'playing') {
-            return response()->json(['success' => false, 'message' => 'Game is not active'], 400);
-        }
-
-        $gameState = $game->game_state;
-        $playerSymbol = $game->getPlayerSymbol($playerId);
-
-        if ($gameState['current_player'] !== $playerSymbol) {
-            return response()->json(['success' => false, 'message' => 'Not your turn'], 400);
-        }
-
-        // Validate the move
-        if (!$this->isValidMove($gameState, $grid, $position)) {
-            return response()->json(['success' => false, 'message' => 'Invalid move'], 400);
-        }
-
-        // Make the move
-        $gameState = $this->processMove($gameState, $grid, $position, $playerSymbol);
-
-        $game->update([
-            'game_state' => $gameState,
-            'last_move_at' => now(),
-            'status' => $gameState['game_over'] ? 'finished' : 'playing',
-            'winner' => $gameState['winner']
+        return response()->json([
+            'success' => true,
+            'game' => $gameData['game']
         ]);
-
-        GameUpdated::dispatch($game);
-
-        return response()->json(['success' => true, 'game' => $game]);
     }
 
     public function getGame(string $code): JsonResponse
