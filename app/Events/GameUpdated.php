@@ -40,8 +40,8 @@ class GameUpdated implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
-        return [
-            'game' => $this->game
-        ];
+        return is_object($this->game) && isset($this->game->code)
+            ? ['game' => $this->game]
+            : $this->game;
     }
 }

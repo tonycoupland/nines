@@ -398,12 +398,16 @@ async function setupOnlineGame() {
     }
     
     gameState.channel = echo.channel(`game.${gameState.gameCode}`)
-        .listen('GameUpdated', (data) => {
+        .listen('.game-updated', (data) => {
+            console.log('Raw WebSocket data received:', data);
             handleGameUpdate(data);
         });
     
     document.getElementById('connection-status').textContent = 'Connected';
     showScreen('game-screen');
+    
+    // Log for debugging
+    console.log(`Set up WebSocket for game: ${gameState.gameCode}, listening on channel: game.${gameState.gameCode}`);
 }
 
 function handleGameUpdate(data) {
