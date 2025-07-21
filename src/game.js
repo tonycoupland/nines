@@ -325,8 +325,8 @@ window.joinGame = async function() {
     const codeInput = document.getElementById('game-code-input');
     const gameCode = codeInput.value.trim().toUpperCase();
     
-    if (!gameCode || gameCode.length !== 6) {
-        showMessage('Please enter a valid 6-character game code', 'error');
+    if (!gameCode || gameCode.length !== 4) {
+        showMessage('Please enter a valid 4-letter game code', 'error');
         return;
     }
     
