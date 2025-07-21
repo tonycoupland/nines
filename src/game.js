@@ -65,12 +65,28 @@ function checkGameWin() {
     return null;
 }
 
-function makeMove(gridIndex, cellIndex) {
-    // Check if move is valid
+function canMakeMove(gridIndex, cellIndex) {
+    // Check if game is over
     if (gameState.gameWon) return false;
+    
+    // Check if cell is already occupied
     if (gameState.grids[gridIndex][cellIndex] !== '') return false;
+    
+    // Check if grid is already won
+    if (gameState.gridWinners[gridIndex] !== null) return false;
+    
+    // Check if we're restricted to a specific grid
     if (gameState.activeGrid !== null && gameState.activeGrid !== gridIndex) return false;
+    
+    // Check if it's our turn in online games
     if (gameState.isOnline && gameState.currentPlayer !== gameState.mySymbol) return false;
+    
+    return true;
+}
+
+function makeMove(gridIndex, cellIndex) {
+    // Check if move is valid using the canMakeMove function
+    if (!canMakeMove(gridIndex, cellIndex)) return false;
     
     // Make the move
     gameState.grids[gridIndex][cellIndex] = gameState.currentPlayer;
@@ -177,6 +193,11 @@ function updateDisplay() {
             } else {
                 cell.textContent = cellIndex + 1;
                 cell.onclick = () => makeMove(gridIndex, cellIndex);
+                
+                // Add playable class if this cell can be played
+                if (canMakeMove(gridIndex, cellIndex)) {
+                    cell.classList.add('playable');
+                }
             }
             
             miniGrid.appendChild(cell);
