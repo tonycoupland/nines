@@ -414,6 +414,10 @@ async function setupOnlineGame() {
             console.log('Raw WebSocket data received:', data);
             handleGameUpdate(data);
         })
+        .listen('GameUpdated', (data) => {
+            console.log('GameUpdated event received:', data);
+            handleGameUpdate(data);
+        })
         .error((error) => {
             console.error('Channel error:', error);
         });

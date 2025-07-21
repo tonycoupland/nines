@@ -27,6 +27,8 @@ class GameUpdated implements ShouldBroadcast
         $gameCode = is_object($this->game) && isset($this->game->code) 
             ? $this->game->code 
             : $this->game['game']['code'];
+        
+        error_log("Broadcasting on channel: game.{$gameCode}");
             
         return [
             new Channel("game.{$gameCode}")
@@ -40,8 +42,11 @@ class GameUpdated implements ShouldBroadcast
 
     public function broadcastWith(): array
     {
-        return is_object($this->game) && isset($this->game->code)
+        $data = is_object($this->game) && isset($this->game->code)
             ? ['game' => $this->game]
             : $this->game;
+        
+        error_log("Broadcasting data: " . json_encode($data));
+        return $data;
     }
 }
