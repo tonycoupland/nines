@@ -4,15 +4,44 @@ import Pusher from 'pusher-js';
 
 // Initialize Laravel Echo for websockets
 window.Pusher = Pusher;
-const echo = new Echo({
-    broadcaster: 'reverb',
-    key: 'local-key',
-    wsHost: window.location.hostname,
-    wsPort: 8081,
-    wssPort: 8081,
-    forceTLS: false,
-    enabledTransports: ['ws', 'wss'],
-});
+let echo = null;
+
+// Initialize Echo with config from server
+async function initializeEcho() {
+    try {
+        const response = await fetch('/api/config');
+        const config = await response.json();
+        const reverbConfig = config.reverb;
+        
+        echo = new Echo({
+            broadcaster: 'reverb',
+            key: reverbConfig.key,
+            wsHost: reverbConfig.host,
+            wsPort: reverbConfig.port,
+            wssPort: reverbConfig.port,
+            forceTLS: reverbConfig.scheme === 'https',
+            enabledTransports: ['ws', 'wss'],
+        });
+        
+        console.log('Echo initialized with config:', reverbConfig);
+    } catch (error) {
+        console.error('Failed to load config, using defaults:', error);
+        
+        // Fallback to hardcoded config
+        echo = new Echo({
+            broadcaster: 'reverb',
+            key: 'local-key',
+            wsHost: window.location.hostname,
+            wsPort: 8081,
+            wssPort: 8081,
+            forceTLS: false,
+            enabledTransports: ['ws', 'wss'],
+        });
+    }
+}
+
+// Initialize Echo when the page loads
+initializeEcho();
 
 // Game state
 let gameState = {
@@ -333,7 +362,7 @@ window.joinGame = async function() {
     }
 };
 
-function setupOnlineGame() {
+async function setupOnlineGame() {
     resetGame();
     
     // Setup game display
@@ -341,7 +370,12 @@ function setupOnlineGame() {
     document.getElementById('game-code-display').textContent = `Game Code: ${gameState.gameCode}`;
     document.getElementById('game-code-display').style.display = 'block';
     document.getElementById('connection-status').style.display = 'block';
-    document.getElementById('connection-status').textContent = 'Connected';
+    document.getElementById('connection-status').textContent = 'Connecting...';
+    
+    // Ensure Echo is initialized
+    if (!echo) {
+        await initializeEcho();
+    }
     
     // Setup WebSocket channel
     if (gameState.channel) {
@@ -353,6 +387,7 @@ function setupOnlineGame() {
             handleGameUpdate(data);
         });
     
+    document.getElementById('connection-status').textContent = 'Connected';
     showScreen('game-screen');
 }
 
