@@ -32,6 +32,10 @@ args = "Build Production"
 task = "workflow.run"
 args = "Build Development"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Main Server"
+
 [[workflows.workflow]]
 name = "Laravel Backend"
 author = "agent"
@@ -73,6 +77,15 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "npx webpack --config webpack.config.cjs --mode=development"
+
+[[workflows.workflow]]
+name = "Main Server"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "php artisan serve --host=0.0.0.0 --port=5000"
+waitForPort = 5000
 
 [[ports]]
 localPort = 3000

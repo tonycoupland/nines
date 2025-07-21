@@ -304,7 +304,7 @@ window.showCreateGame = async function() {
         }
         
         const data = await response.json();
-        gameState.gameCode = data.code;
+        gameState.gameCode = data.game.code;
         gameState.isOnline = true;
         gameState.mySymbol = 'X'; // Creator is always X
         

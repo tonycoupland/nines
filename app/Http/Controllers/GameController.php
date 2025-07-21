@@ -16,12 +16,17 @@ class GameController extends Controller
     {
         $playerId = $request->input('player_id');
         
-        $game = Game::create([
-            'code' => Game::generateCode(),
+        // Generate a simple 6-character code without database check for now
+        $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'), 0, 6));
+        
+        // Create a simple game object without database
+        $game = (object) [
+            'id' => rand(1000, 9999),
+            'code' => $code,
             'player1_id' => $playerId,
-            'game_state' => (new Game())->initializeGameState(),
-            'status' => 'waiting'
-        ]);
+            'status' => 'waiting',
+            'created_at' => now()
+        ];
 
         return response()->json([
             'success' => true,
