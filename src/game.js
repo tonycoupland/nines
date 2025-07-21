@@ -16,11 +16,11 @@ async function initializeEcho() {
         echo = new Echo({
             broadcaster: 'reverb',
             key: reverbConfig.key,
-            wsHost: reverbConfig.host,
-            wsPort: reverbConfig.scheme === 'https' ? 443 : reverbConfig.port,
-            wssPort: reverbConfig.scheme === 'https' ? 443 : reverbConfig.port,
-            forceTLS: reverbConfig.scheme === 'https',
-            enabledTransports: ['ws', 'wss'],
+            wsHost: window.location.hostname,
+            wsPort: 8081,
+            wssPort: 8081,
+            forceTLS: false,
+            enabledTransports: ['ws'],
         });
         
         console.log('Echo initialized with config:', reverbConfig);
