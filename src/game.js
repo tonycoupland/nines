@@ -453,6 +453,9 @@ async function setupOnlineGame() {
             console.log('Testing WebSocket roundtrip...');
             setTimeout(() => testWebSocketConnection(), 1000);
         }
+        
+        // Also setup test channel listener
+        setupTestChannel();
     });
     
     document.getElementById('connection-status').textContent = 'Connected';
@@ -533,6 +536,38 @@ async function testWebSocketConnection() {
         console.error('WebSocket test error:', error);
     }
 }
+
+// Test channel setup for debugging
+function setupTestChannel() {
+    if (!echo) return;
+    
+    const testChannel = echo.channel('test-channel');
+    testChannel.listen('.test-message', (data) => {
+        console.log('✓ TEST BROADCAST RECEIVED:', data);
+        showMessage(`Test received: ${data.message}`, 'success');
+    });
+    
+    console.log('Test channel listener setup complete');
+}
+
+// Manual test broadcast trigger
+window.triggerTestBroadcast = function() {
+    console.log('Triggering test broadcast...');
+    fetch('/api/test-broadcast', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Test broadcast response:', data);
+    })
+    .catch(error => {
+        console.error('Test broadcast error:', error);
+    });
+};
 
 window.newGame = function() {
     resetGame();

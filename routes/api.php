@@ -23,3 +23,22 @@ Route::post('/games/{code}/join', [GameController::class, 'joinGame']);
 Route::post('/games/{code}/move', [GameController::class, 'makeMove']);
 Route::get('/games/{code}', [GameController::class, 'getGame']);
 Route::get('/games/{code}/qr', [GameController::class, 'getQrCode']);
+
+// Test broadcast endpoint
+Route::post('/test-broadcast', function() {
+    $testData = [
+        'message' => 'Test broadcast at ' . now(),
+        'timestamp' => time()
+    ];
+    
+    error_log('Broadcasting test message to channel: test-channel');
+    error_log('Test data: ' . json_encode($testData));
+    
+    broadcast(new \App\Events\TestBroadcast($testData));
+    
+    return response()->json([
+        'success' => true,
+        'message' => 'Test broadcast sent',
+        'data' => $testData
+    ]);
+});
