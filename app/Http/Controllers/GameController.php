@@ -78,7 +78,9 @@ class GameController extends Controller
 
         // Broadcast to all players in this game channel
         try {
+            error_log('Broadcasting game update for code: ' . strtoupper($code));
             GameUpdated::dispatch($gameData);
+            error_log('GameUpdated event dispatched successfully');
         } catch (\Exception $e) {
             // Continue without broadcasting if there's an issue
             error_log('Broadcasting failed: ' . $e->getMessage());

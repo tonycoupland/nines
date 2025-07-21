@@ -413,7 +413,15 @@ async function setupOnlineGame() {
         .listen('.game-updated', (data) => {
             console.log('Raw WebSocket data received:', data);
             handleGameUpdate(data);
+        })
+        .error((error) => {
+            console.error('Channel error:', error);
         });
+        
+    // Test connection
+    gameState.channel.subscribed(() => {
+        console.log(`Successfully subscribed to channel: game.${gameState.gameCode}`);
+    });
     
     document.getElementById('connection-status').textContent = 'Connected';
     showScreen('game-screen');
