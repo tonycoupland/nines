@@ -28,6 +28,7 @@ async function initializeEcho() {
         // Add connection event listeners for debugging
         echo.connector.pusher.connection.bind('connected', () => {
             console.log('WebSocket connection established');
+            console.log('Connection state:', echo.connector.pusher.connection.state);
         });
         
         echo.connector.pusher.connection.bind('error', (error) => {
@@ -36,6 +37,14 @@ async function initializeEcho() {
         
         echo.connector.pusher.connection.bind('disconnected', () => {
             console.log('WebSocket connection lost');
+        });
+        
+        echo.connector.pusher.connection.bind('unavailable', () => {
+            console.error('WebSocket connection unavailable');
+        });
+        
+        echo.connector.pusher.connection.bind('failed', () => {
+            console.error('WebSocket connection failed');
         });
     } catch (error) {
         console.error('Failed to load config, using defaults:', error);
