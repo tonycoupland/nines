@@ -27,31 +27,38 @@ location /app {
 }
 ```
 
-### 2. Laravel Reverb Server
-Start the Reverb server on your production server:
+### 2. Laravel Reverb Server (Recommended: Systemd Service)
+
+**Option A: Manual Start (Not Recommended)**
 ```bash
-cd /path/to/your/laravel/app
+cd /var/www/ninesgame.co.uk
 php artisan reverb:start --host=0.0.0.0 --port=8081
 ```
 
-Or better yet, set up as a systemd service:
-```ini
-# /etc/systemd/system/laravel-reverb.service
-[Unit]
-Description=Laravel Reverb WebSocket Server
-After=network.target
-
-[Service]
-Type=simple
-User=www-data
-WorkingDirectory=/path/to/your/laravel/app
-ExecStart=/usr/bin/php artisan reverb:start --host=0.0.0.0 --port=8081
-Restart=always
-RestartSec=5
-
-[Install]
-WantedBy=multi-user.target
+**Option B: Systemd Service (Recommended)**
+1. Copy the service file:
+```bash
+sudo cp laravel-reverb.service /etc/systemd/system/
 ```
+
+2. Enable and start:
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable laravel-reverb
+sudo systemctl start laravel-reverb
+```
+
+3. Check status:
+```bash
+sudo systemctl status laravel-reverb
+```
+
+**Benefits of Systemd Service:**
+- ✅ Starts automatically on server boot
+- ✅ Restarts automatically if it crashes
+- ✅ Survives deployments
+- ✅ Proper logging and monitoring
+- ✅ No need to manually restart after each deployment
 
 ### 3. Production Environment Variables
 Ensure your production `.env` contains:

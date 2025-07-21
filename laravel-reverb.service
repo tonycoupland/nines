@@ -1,0 +1,26 @@
+[Unit]
+Description=Laravel Reverb WebSocket Server for Nines Game
+After=network.target
+Requires=network.target
+
+[Service]
+Type=simple
+User=www-data
+Group=www-data
+WorkingDirectory=/var/www/ninesgame.co.uk
+ExecStart=/usr/bin/php artisan reverb:start --host=0.0.0.0 --port=8081
+ExecReload=/bin/kill -HUP $MAINPID
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=laravel-reverb
+
+# Security settings
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/ninesgame.co.uk/storage /var/www/ninesgame.co.uk/bootstrap/cache
+
+[Install]
+WantedBy=multi-user.target
