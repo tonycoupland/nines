@@ -24,6 +24,19 @@ async function initializeEcho() {
         });
         
         console.log('Echo initialized with config:', reverbConfig);
+        
+        // Add connection event listeners for debugging
+        echo.connector.pusher.connection.bind('connected', () => {
+            console.log('WebSocket connection established');
+        });
+        
+        echo.connector.pusher.connection.bind('error', (error) => {
+            console.error('WebSocket connection error:', error);
+        });
+        
+        echo.connector.pusher.connection.bind('disconnected', () => {
+            console.log('WebSocket connection lost');
+        });
     } catch (error) {
         console.error('Failed to load config, using defaults:', error);
         
