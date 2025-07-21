@@ -4,12 +4,16 @@ use App\Http\Controllers\GameController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/config', function () {
+    // Detect if we're in production based on APP_ENV or domain
+    $isProduction = env('APP_ENV') === 'production' || 
+                   request()->getHost() !== 'localhost';
+    
     return response()->json([
         'reverb' => [
             'key' => env('VITE_REVERB_APP_KEY', 'local-key'),
-            'host' => env('VITE_REVERB_HOST', 'localhost'),
-            'port' => env('VITE_REVERB_PORT', 8081),
-            'scheme' => env('VITE_REVERB_SCHEME', 'http')
+            'host' => $isProduction ? request()->getHost() : env('VITE_REVERB_HOST', 'localhost'),
+            'port' => $isProduction ? 443 : env('VITE_REVERB_PORT', 8081),
+            'scheme' => $isProduction ? 'https' : env('VITE_REVERB_SCHEME', 'http')
         ]
     ]);
 });

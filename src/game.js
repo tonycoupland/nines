@@ -17,8 +17,8 @@ async function initializeEcho() {
             broadcaster: 'reverb',
             key: reverbConfig.key,
             wsHost: reverbConfig.host,
-            wsPort: reverbConfig.port,
-            wssPort: reverbConfig.port,
+            wsPort: reverbConfig.scheme === 'https' ? 443 : reverbConfig.port,
+            wssPort: reverbConfig.scheme === 'https' ? 443 : reverbConfig.port,
             forceTLS: reverbConfig.scheme === 'https',
             enabledTransports: ['ws', 'wss'],
         });
