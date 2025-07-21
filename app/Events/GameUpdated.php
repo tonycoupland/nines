@@ -28,10 +28,11 @@ class GameUpdated implements ShouldBroadcast
             ? $this->game->code 
             : $this->game['game']['code'];
         
-        error_log("Broadcasting on channel: game.{$gameCode}");
+        $channelName = "game.{$gameCode}";
+        error_log("Broadcasting on channel: {$channelName}");
             
         return [
-            new Channel("game.{$gameCode}")
+            new Channel($channelName)
         ];
     }
 
