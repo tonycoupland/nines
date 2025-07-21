@@ -33,6 +33,7 @@ Preferred communication style: Simple, everyday language.
 - ✓ Fixed Laravel 12 API routing by enabling API routes in bootstrap configuration
 - ✓ Updated Echo client to load configuration dynamically from server instead of hardcoded values
 - ✓ Corrected WebSocket port configuration (8081) and database connection settings
+- ✓ Clarified production deployment WebSocket proxy requirements with nginx configuration
 
 ## System Architecture
 
