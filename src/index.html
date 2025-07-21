@@ -360,6 +360,22 @@
         .status-info {
             background: rgba(52, 152, 219, 0.8);
         }
+
+        /* Turn-based styling */
+        .cell.waiting {
+            background: rgba(255, 255, 255, 0.1) !important;
+            color: rgba(255, 255, 255, 0.4) !important;
+            cursor: not-allowed !important;
+        }
+
+        .cell.clickable {
+            cursor: pointer;
+        }
+
+        .grid.disabled .cell:not(.occupied) {
+            background: rgba(255, 255, 255, 0.05) !important;
+            color: rgba(255, 255, 255, 0.3) !important;
+        }
     </style>
 </head>
 <body>

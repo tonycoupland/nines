@@ -206,11 +206,14 @@ function updateDisplay() {
         const gridElement = document.createElement('div');
         gridElement.className = 'grid';
         
-        // Add active/disabled classes
-        if (gameState.activeGrid === null || gameState.activeGrid === gridIndex) {
-            if (!gameState.gridWinners[gridIndex] && !gameState.gameWon) {
-                gridElement.classList.add('active');
-            }
+        // Add active/disabled classes based on game state and turn
+        const isMyTurn = !gameState.isOnline || gameState.currentPlayer === gameState.mySymbol;
+        const canPlayInThisGrid = (gameState.activeGrid === null || gameState.activeGrid === gridIndex);
+        const gridNotWon = !gameState.gridWinners[gridIndex];
+        const gameNotOver = !gameState.gameWon;
+        
+        if (isMyTurn && canPlayInThisGrid && gridNotWon && gameNotOver) {
+            gridElement.classList.add('active');
         } else {
             gridElement.classList.add('disabled');
         }
@@ -236,7 +239,14 @@ function updateDisplay() {
                 cell.classList.add(cellValue.toLowerCase());
             } else {
                 cell.textContent = cellIndex + 1;
-                cell.onclick = () => makeMove(gridIndex, cellIndex);
+                // Only allow clicks if it's the player's turn
+                const isMyTurn = !gameState.isOnline || gameState.currentPlayer === gameState.mySymbol;
+                if (isMyTurn) {
+                    cell.onclick = () => makeMove(gridIndex, cellIndex);
+                    cell.classList.add('clickable');
+                } else {
+                    cell.classList.add('waiting');
+                }
                 
                 // Add playable class if this cell can be played
                 if (canMakeMove(gridIndex, cellIndex)) {
@@ -367,9 +377,10 @@ window.joinGame = async function() {
         gameState.gameCode = gameCode;
         gameState.isOnline = true;
         gameState.mySymbol = 'O'; // Joiner is always O
+        gameState.currentPlayer = 'X'; // Game always starts with X
         
         setupOnlineGame();
-        showMessage('Joined game successfully!', 'success');
+        showMessage('Joined game successfully! Waiting for player X to start...', 'success');
         
     } catch (error) {
         console.error('Error joining game:', error);
