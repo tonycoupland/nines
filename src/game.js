@@ -379,6 +379,9 @@ window.joinGame = async function() {
         gameState.mySymbol = 'O'; // Joiner is always O
         gameState.currentPlayer = 'X'; // Game always starts with X
         
+        // Force reset to ensure clean state
+        resetGame();
+        
         setupOnlineGame();
         showMessage('Joined game successfully! Waiting for player X to start...', 'success');
         
@@ -389,8 +392,6 @@ window.joinGame = async function() {
 };
 
 async function setupOnlineGame() {
-    resetGame();
-    
     // Setup game display
     document.getElementById('game-info').classList.add('visible');
     document.getElementById('game-code-display').textContent = `Game Code: ${gameState.gameCode}`;
@@ -417,8 +418,11 @@ async function setupOnlineGame() {
     document.getElementById('connection-status').textContent = 'Connected';
     showScreen('game-screen');
     
+    // Force display update to show correct turn state
+    updateDisplay();
+    
     // Log for debugging
-    console.log(`Set up WebSocket for game: ${gameState.gameCode}, listening on channel: game.${gameState.gameCode}`);
+    console.log(`Set up WebSocket for game: ${gameState.gameCode}, My symbol: ${gameState.mySymbol}, Current player: ${gameState.currentPlayer}`);
 }
 
 function handleGameUpdate(data) {
