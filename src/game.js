@@ -120,8 +120,9 @@ function canMakeMove(gridIndex, cellIndex) {
     // Check if game is over
     if (gameState.gameWon) return false;
     
-    // Check if cell is already occupied
-    if (gameState.grids[gridIndex][cellIndex] !== '') return false;
+    // Check if cell is already occupied 
+    const cellValue = gameState.grids[gridIndex][cellIndex];
+    if (cellValue !== '' && cellValue != null) return false;
     
     // Check if grid is already won
     if (gameState.gridWinners[gridIndex] !== null) return false;
@@ -267,12 +268,17 @@ function updateDisplay() {
                     if (canMakeMove(gridIndex, cellIndex)) {
                         makeMove(gridIndex, cellIndex);
                     } else {
+                        const cellValue = gameState.grids[gridIndex][cellIndex];
                         console.log('Move not allowed:', {
                             gameWon: gameState.gameWon,
-                            cellOccupied: gameState.grids[gridIndex][cellIndex] !== '',
+                            cellValue: cellValue,
+                            cellOccupied: cellValue && cellValue !== '',
                             gridWon: gameState.gridWinners[gridIndex] !== null,
                             activeGrid: gameState.activeGrid,
-                            isMyTurn: gameState.currentPlayer === gameState.mySymbol
+                            requiredGrid: gameState.activeGrid,
+                            isMyTurn: gameState.currentPlayer === gameState.mySymbol,
+                            currentPlayer: gameState.currentPlayer,
+                            mySymbol: gameState.mySymbol
                         });
                     }
                 };
