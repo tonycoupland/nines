@@ -37,6 +37,14 @@ Preferred communication style: Simple, everyday language.
 - ✓ Created production deployment guide with complete nginx WebSocket proxy setup
 - ✓ Verified WebSocket client configuration working correctly (ready for nginx proxy setup)
 
+**July 22, 2025:**
+- ✓ Added comprehensive test broadcast system to debug WebSocket communication
+- ✓ Implemented dedicated TestBroadcast event with manual trigger function
+- ✓ Reverted commit 7c2af57 that broke WebSocket configuration
+- ✓ Created proper .gitignore file to exclude build files and dependencies
+- ✓ Removed tracked build files (bundle.js, index.html) from repository
+- ✓ Cleaned up temporary files and excluded node_modules from version control
+
 ## System Architecture
 
 The current active version uses **Full-Stack Real-time Multiplayer Architecture**:

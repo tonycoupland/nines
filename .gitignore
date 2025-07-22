@@ -1,0 +1,77 @@
+# Node modules and dependencies
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build outputs
+/public/bundle.js
+/public/index.html
+/public/test-websocket.html
+dist/
+build/
+
+# Cache directories
+.cache/
+.tmp/
+.temp/
+
+# Laravel files
+/vendor/
+/storage/*.key
+/storage/logs/
+/storage/framework/cache/data/
+/storage/framework/sessions/
+/storage/framework/testing/
+/storage/framework/views/
+.env
+.env.local
+.env.*.local
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Desktop.ini
+Thumbs.db
+
+# Logs
+logs
+*.log
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Webpack
+webpack-stats.json
+
+# Development and testing
+test-websocket.html
+
+# UPM (Replit package manager)
+.upm/
+
+# Configuration (keep templates)
+.replit
+replit.nix
+
+# Local development
+.local/
+.config/
