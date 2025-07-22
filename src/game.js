@@ -436,10 +436,6 @@ async function setupOnlineGame() {
             console.log('Raw WebSocket data received:', data);
             handleGameUpdate(data);
         })
-        .listen('GameUpdated', (data) => {
-            console.log('GameUpdated event received:', data);
-            handleGameUpdate(data);
-        })
         .error((error) => {
             console.error('Channel error:', error);
         });
@@ -447,15 +443,6 @@ async function setupOnlineGame() {
     // Test connection
     gameState.channel.subscribed(() => {
         console.log(`Successfully subscribed to channel: game.${gameState.gameCode}`);
-        
-        // Test WebSocket roundtrip when creator joins
-        if (gameState.mySymbol === 'X') {
-            console.log('Testing WebSocket roundtrip...');
-            setTimeout(() => testWebSocketConnection(), 1000);
-        }
-        
-        // Also setup test channel listener
-        setupTestChannel();
     });
     
     document.getElementById('connection-status').textContent = 'Connected';
@@ -488,86 +475,6 @@ function handleGameUpdate(data) {
         }
     }
 }
-
-// WebSocket connection test function
-async function testWebSocketConnection() {
-    console.log('Starting WebSocket test...');
-    
-    try {
-        // Make a test move via API that should trigger a WebSocket event
-        const testResponse = await fetch(`/api/games/${gameState.gameCode}/move`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Accept': 'application/json'
-            },
-            body: JSON.stringify({
-                player_id: gameState.playerId,
-                grid: 4,
-                position: 4,
-                game_state: {
-                    grids: [
-                        ["","","","","","","","",""],
-                        ["","","","","","","","",""],
-                        ["","","","","","","","",""],
-                        ["","","","","","","","",""],
-                        ["","","","","X","","","",""],
-                        ["","","","","","","","",""],
-                        ["","","","","","","","",""],
-                        ["","","","","","","","",""],
-                        ["","","","","","","","",""]
-                    ],
-                    currentPlayer: "O",
-                    activeGrid: 4,
-                    gridWinners: [null,null,null,null,null,null,null,null,null],
-                    gameWon: false,
-                    winner: null
-                }
-            })
-        });
-        
-        if (testResponse.ok) {
-            console.log('WebSocket test move sent successfully');
-            showMessage('WebSocket test initiated - check for event reception', 'info');
-        } else {
-            console.error('WebSocket test move failed:', testResponse.status);
-        }
-    } catch (error) {
-        console.error('WebSocket test error:', error);
-    }
-}
-
-// Test channel setup for debugging
-function setupTestChannel() {
-    if (!echo) return;
-    
-    const testChannel = echo.channel('test-channel');
-    testChannel.listen('.test-message', (data) => {
-        console.log('✓ TEST BROADCAST RECEIVED:', data);
-        showMessage(`Test received: ${data.message}`, 'success');
-    });
-    
-    console.log('Test channel listener setup complete');
-}
-
-// Manual test broadcast trigger
-window.triggerTestBroadcast = function() {
-    console.log('Triggering test broadcast...');
-    fetch('/api/test-broadcast', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json'
-        }
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log('Test broadcast response:', data);
-    })
-    .catch(error => {
-        console.error('Test broadcast error:', error);
-    });
-};
 
 window.newGame = function() {
     resetGame();
