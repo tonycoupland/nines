@@ -261,12 +261,28 @@ function updateDisplay() {
                 cell.classList.add(cellValue.toLowerCase());
             } else {
                 cell.textContent = cellIndex + 1;
-                // Only allow clicks if it's the player's turn
+                // Always add click handler, but check permissions inside
+                cell.onclick = () => {
+                    console.log(`Clicked cell ${gridIndex}-${cellIndex}, current player: ${gameState.currentPlayer}, my symbol: ${gameState.mySymbol}`);
+                    if (canMakeMove(gridIndex, cellIndex)) {
+                        makeMove(gridIndex, cellIndex);
+                    } else {
+                        console.log('Move not allowed:', {
+                            gameWon: gameState.gameWon,
+                            cellOccupied: gameState.grids[gridIndex][cellIndex] !== '',
+                            gridWon: gameState.gridWinners[gridIndex] !== null,
+                            activeGrid: gameState.activeGrid,
+                            isMyTurn: gameState.currentPlayer === gameState.mySymbol
+                        });
+                    }
+                };
+                
+                // Add visual classes
                 const isMyTurn = !gameState.isOnline || gameState.currentPlayer === gameState.mySymbol;
-                if (isMyTurn) {
-                    cell.onclick = () => makeMove(gridIndex, cellIndex);
+                const canPlay = canMakeMove(gridIndex, cellIndex);
+                if (isMyTurn && canPlay) {
                     cell.classList.add('clickable');
-                } else {
+                } else if (!isMyTurn) {
                     cell.classList.add('waiting');
                 }
                 

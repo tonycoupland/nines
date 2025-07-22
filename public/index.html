@@ -1,11 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Nines - The Ultimate Strategy Game</title>
-    <style>
-        * {
+<!doctype html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"><title>Nines - The Ultimate Strategy Game</title><style>* {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
@@ -24,7 +17,9 @@
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            padding: min(20px, 3vw);
+            width: 100%;
+            box-sizing: border-box;
         }
 
         /* Header */
@@ -34,13 +29,13 @@
         }
 
         h1 {
-            font-size: 3em;
+            font-size: clamp(2rem, 8vw, 3rem);
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
         }
 
         .subtitle {
-            font-size: 1.2em;
+            font-size: clamp(1rem, 4vw, 1.2rem);
             opacity: 0.9;
             margin-bottom: 20px;
         }
@@ -123,11 +118,12 @@
         .mega-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
-            gap: 12px;
-            max-width: 650px;
+            gap: min(12px, 2vw);
+            max-width: min(650px, 95vw);
+            width: 100%;
             margin: 0 auto;
             background: rgba(0, 0, 0, 0.25);
-            padding: 15px;
+            padding: min(15px, 3vw);
             border-radius: 20px;
             backdrop-filter: blur(15px);
             border: 1px solid rgba(255, 255, 255, 0.1);
@@ -181,7 +177,7 @@
             font-weight: bold;
             color: #333;
             margin-bottom: 5px;
-            font-size: 0.9em;
+            font-size: clamp(0.7rem, 2vw, 0.9rem);
         }
 
         .mini-grid {
@@ -197,9 +193,9 @@
             align-items: center;
             justify-content: center;
             background: linear-gradient(145deg, #f8f9fa, #e9ecef);
-            border-radius: 6px;
+            border-radius: min(6px, 1vw);
             cursor: pointer;
-            font-size: 1.2em;
+            font-size: clamp(0.7rem, 2.5vw, 1.2rem);
             font-weight: 600;
             color: #666;
             transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
@@ -208,6 +204,7 @@
                 0 2px 4px rgba(0, 0, 0, 0.1),
                 inset 0 1px 0 rgba(255, 255, 255, 0.8);
             position: relative;
+            min-height: 0;
         }
 
         .cell.playable:hover {
@@ -324,19 +321,83 @@
             letter-spacing: 2px;
         }
 
-        /* Responsive */
+        /* Enhanced Mobile Responsive Design */
         @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+                width: 100%;
+            }
+            
             .mega-grid {
-                max-width: 350px;
+                gap: min(8px, 1.5vw);
+                padding: min(12px, 2.5vw);
+                max-width: 98vw;
+                margin: 10px auto;
+            }
+            
+            .grid {
+                padding: min(8px, 1.5vw);
+                border-radius: min(8px, 1.5vw);
+            }
+            
+            .cell {
+                font-size: clamp(0.6rem, 3.5vw, 1rem);
+                border-radius: min(4px, 0.8vw);
+                min-height: min(35px, 8vw);
+            }
+            
+            .grid-header {
+                font-size: clamp(0.6rem, 2.5vw, 0.8rem);
+                margin-bottom: 3px;
             }
             
             h1 {
-                font-size: 2em;
+                font-size: clamp(1.5rem, 6vw, 2.5rem);
+                margin-bottom: 8px;
+            }
+            
+            .subtitle {
+                font-size: clamp(0.9rem, 3.5vw, 1.1rem);
             }
             
             .game-info {
                 flex-direction: column;
                 text-align: center;
+                padding: 15px;
+                margin-bottom: 15px;
+            }
+            
+            .game-info h2 {
+                font-size: clamp(1.2rem, 4vw, 1.5rem);
+            }
+            
+            .menu-screen {
+                padding: 20px 10px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .mega-grid {
+                gap: 6px;
+                padding: 8px;
+                max-width: 100vw;
+            }
+            
+            .grid {
+                padding: 6px;
+            }
+            
+            .cell {
+                font-size: clamp(0.5rem, 4vw, 0.9rem);
+                min-height: min(32px, 9vw);
+            }
+            
+            .mini-grid {
+                gap: 1px;
+            }
+            
+            .container {
+                padding: 5px;
             }
         }
 
@@ -375,61 +436,4 @@
         .grid.disabled .cell:not(.occupied) {
             background: rgba(255, 255, 255, 0.05) !important;
             color: rgba(255, 255, 255, 0.3) !important;
-        }
-    </style>
-<script defer src="/bundle.js"></script></head>
-<body>
-    <div class="container">
-        <header>
-            <h1>🎮 NINES 🎮</h1>
-            <div class="subtitle">The Ultimate 9-Grid Strategy Game</div>
-        </header>
-
-        <!-- Menu Screen -->
-        <div id="menu-screen" class="menu-screen">
-            <div class="menu-buttons">
-                <button class="menu-btn" onclick="startLocalGame()">🏠 Play Locally</button>
-                <button class="menu-btn" onclick="showCreateGame()">🌐 Create Online Game</button>
-                <button class="menu-btn" onclick="showJoinGame()">🚀 Join Online Game</button>
-            </div>
-        </div>
-
-        <!-- Join Game Screen -->
-        <div id="join-screen" class="join-screen">
-            <h2>Join Online Game</h2>
-            <div class="join-form">
-                <div class="form-group">
-                    <input type="text" id="game-code-input" placeholder="ABCD" maxlength="4">
-                </div>
-                <div class="menu-buttons">
-                    <button class="menu-btn" onclick="joinGame()">Join Game</button>
-                    <button class="menu-btn" onclick="showMenu()">← Back to Menu</button>
-                </div>
-            </div>
-            <div id="join-status"></div>
-        </div>
-
-        <!-- Game Screen -->
-        <div id="game-screen" class="game-screen">
-            <div id="game-info" class="game-info">
-                <div class="current-player">
-                    <span id="current-player-display">Player X's turn</span>
-                </div>
-                <div id="game-code-display" class="game-code"></div>
-                <div id="connection-status" class="status-info">Connecting...</div>
-            </div>
-
-            <div id="status-message" class="status-message" style="display: none;"></div>
-
-            <div class="mega-grid" id="mega-grid">
-                <!-- Grids will be generated by JavaScript -->
-            </div>
-
-            <div class="controls">
-                <button class="btn" onclick="newGame()">New Game</button>
-                <button class="btn" onclick="showMenu()">← Back to Menu</button>
-            </div>
-        </div>
-    </div>
-</body>
-</html>
+        }</style><script defer="defer" src="/bundle.js"></script></head><body><div class="container"><header><h1>🎮 NINES 🎮</h1><div class="subtitle">The Ultimate 9-Grid Strategy Game</div></header><div id="menu-screen" class="menu-screen"><div class="menu-buttons"><button class="menu-btn" onclick="startLocalGame()">🏠 Play Locally</button> <button class="menu-btn" onclick="showCreateGame()">🌐 Create Online Game</button> <button class="menu-btn" onclick="showJoinGame()">🚀 Join Online Game</button></div></div><div id="join-screen" class="join-screen"><h2>Join Online Game</h2><div class="join-form"><div class="form-group"><input id="game-code-input" placeholder="ABCD" maxlength="4"></div><div class="menu-buttons"><button class="menu-btn" onclick="joinGame()">Join Game</button> <button class="menu-btn" onclick="showMenu()">← Back to Menu</button></div></div><div id="join-status"></div></div><div id="game-screen" class="game-screen"><div id="game-info" class="game-info"><div class="current-player"><span id="current-player-display">Player X's turn</span></div><div id="game-code-display" class="game-code"></div><div id="connection-status" class="status-info">Connecting...</div></div><div id="status-message" class="status-message" style="display: none;"></div><div class="mega-grid" id="mega-grid"></div><div class="controls"><button class="btn" onclick="newGame()">New Game</button> <button class="btn" onclick="showMenu()">← Back to Menu</button></div></div></div></body></html>
