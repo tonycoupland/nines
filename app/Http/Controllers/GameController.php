@@ -271,10 +271,24 @@ class GameController extends Controller
         $activeGames = Game::where('status', 'active')->count();
         $completedGames = Game::where('status', 'completed')->count();
         $totalPlayers = Player::count();
-        $avgGameDuration = Game::whereNotNull('ended_at')
-            ->whereNotNull('started_at')
-            ->selectRaw('AVG(EXTRACT(EPOCH FROM (ended_at - started_at))) as avg_duration')
-            ->value('avg_duration');
+        
+        // Get database driver to use appropriate SQL syntax
+        $driver = config('database.default');
+        $connection = config("database.connections.{$driver}.driver");
+        
+        if ($connection === 'pgsql') {
+            // PostgreSQL syntax
+            $avgGameDuration = Game::whereNotNull('ended_at')
+                ->whereNotNull('started_at')
+                ->selectRaw('AVG(EXTRACT(EPOCH FROM (ended_at - started_at))) as avg_duration')
+                ->value('avg_duration');
+        } else {
+            // MySQL/MariaDB syntax
+            $avgGameDuration = Game::whereNotNull('ended_at')
+                ->whereNotNull('started_at')
+                ->selectRaw('AVG(TIMESTAMPDIFF(SECOND, started_at, ended_at)) as avg_duration')
+                ->value('avg_duration');
+        }
         
         $avgMovesPerGame = Game::where('move_count', '>', 0)->avg('move_count');
         

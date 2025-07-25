@@ -61,6 +61,8 @@ Preferred communication style: Simple, everyday language.
 - ✓ Created beautiful stats screen with personal and global statistics
 - ✓ Enhanced database with game tracking fields (move_count, duration, end_reason)
 - ✓ Added API endpoints for stats, game resumption, and resign functionality
+- ✓ Fixed SQL compatibility issue - now supports both PostgreSQL and MariaDB/MySQL
+- ✓ Added database-agnostic time duration calculations for production deployment
 
 ## System Architecture
 
