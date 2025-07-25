@@ -156,10 +156,18 @@ function updateConnectionStatus(isConnected) {
 async function loadPlayerStats() {
     try {
         const response = await fetch(`/api/player/stats?player_id=${playerId}`);
+        
+        if (!response.ok) {
+            console.error('Player stats request failed with status:', response.status);
+            return;
+        }
+        
         const data = await response.json();
         
         if (data.success) {
             playerStats = data.stats;
+        } else {
+            console.error('Player stats API returned error:', data.message);
         }
     } catch (error) {
         console.error('Failed to load player stats:', error);
@@ -169,10 +177,19 @@ async function loadPlayerStats() {
 async function loadGlobalStats() {
     try {
         const response = await fetch('/api/stats/global');
+        
+        if (!response.ok) {
+            console.error('Global stats request failed with status:', response.status);
+            return null;
+        }
+        
         const data = await response.json();
         
         if (data.success) {
             return data.stats;
+        } else {
+            console.error('Global stats API returned error:', data.message);
+            return null;
         }
     } catch (error) {
         console.error('Failed to load global stats:', error);
