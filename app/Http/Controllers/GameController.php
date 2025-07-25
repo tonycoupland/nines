@@ -3,12 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\Player;
+use App\Models\PlayerStats;
 use App\Events\GameUpdated;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use Endroid\QrCode\QrCode;
-use Endroid\QrCode\Writer\PngWriter;
-use Endroid\QrCode\Encoding\Encoding;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class GameController extends Controller
 {
@@ -16,22 +17,39 @@ class GameController extends Controller
     {
         $playerId = $request->input('player_id');
         
-        // Generate a simple 4-letter code as requested
-        $code = strtoupper(substr(str_shuffle('ABCDEFGHIJKLMNOPQRSTUVWXYZ'), 0, 4));
+        // Create or find player record
+        $player = Player::findOrCreateByPlayerId($playerId);
         
-        // Create a simple game object without database
-        $game = (object) [
-            'id' => rand(1000, 9999),
+        // Generate 4-character game code
+        $code = Game::generateCode();
+        
+        // Create game with proper tracking
+        $game = Game::create([
             'code' => $code,
-            'player1_id' => $playerId,
+            'player1_id' => $player->id,
+            'game_state' => [
+                'grids' => array_fill(0, 9, array_fill(0, 9, '')),
+                'grid_winners' => array_fill(0, 9, null),
+                'current_player' => 'X',
+                'active_grid' => null,
+                'game_over' => false,
+                'winner' => null
+            ],
             'status' => 'waiting',
-            'created_at' => now()
-        ];
+            'started_at' => now(),
+            'move_count' => 0
+        ]);
 
         return response()->json([
             'success' => true,
-            'game' => $game,
-            'qr_url' => url("/join/{$game->code}")
+            'game' => [
+                'id' => $game->id,
+                'code' => $game->code,
+                'status' => $game->status,
+                'game_state' => $game->game_state,
+                'player_symbol' => 'X'
+            ],
+            'qr_url' => url("/game/{$game->code}")
         ]);
     }
 
@@ -39,20 +57,103 @@ class GameController extends Controller
     {
         $playerId = $request->input('player_id');
         
-        // For now, create a simple response without database lookup
-        $game = (object) [
-            'id' => rand(1000, 9999),
-            'code' => strtoupper($code),
-            'player1_id' => 'existing_player',
-            'player2_id' => $playerId,
-            'status' => 'active',
-            'current_turn' => 'X'
-        ];
+        // Create or find player record
+        $player = Player::findOrCreateByPlayerId($playerId);
+        
+        // Find game by code
+        $game = Game::where('code', strtoupper($code))->first();
+        
+        if (!$game) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Game not found'
+            ], 404);
+        }
+        
+        if ($game->status !== 'waiting') {
+            // Check if this player is already in the game
+            if ($game->player1_id === $player->id || $game->player2_id === $player->id) {
+                return response()->json([
+                    'success' => true,
+                    'game' => [
+                        'id' => $game->id,
+                        'code' => $game->code,
+                        'status' => $game->status,
+                        'game_state' => $game->game_state,
+                        'player_symbol' => $game->player1_id === $player->id ? 'X' : 'O'
+                    ],
+                    'message' => 'Rejoined existing game'
+                ]);
+            }
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Game is full or already ended'
+            ], 400);
+        }
+        
+        // Join game as player 2
+        $game->update([
+            'player2_id' => $player->id,
+            'status' => 'active'
+        ]);
+        
+        // Broadcast game update
+        broadcast(new GameUpdated($game->code, $game->game_state, 'player_joined'));
 
         return response()->json([
             'success' => true,
-            'game' => $game,
+            'game' => [
+                'id' => $game->id,
+                'code' => $game->code,
+                'status' => $game->status,
+                'game_state' => $game->game_state,
+                'player_symbol' => 'O'
+            ],
             'message' => 'Successfully joined game'
+        ]);
+    }
+
+    public function getGame(Request $request, string $code): JsonResponse
+    {
+        $playerId = $request->input('player_id');
+        
+        $game = Game::where('code', strtoupper($code))->first();
+        
+        if (!$game) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Game not found'
+            ], 404);
+        }
+        
+        // Find player record
+        $player = Player::where('player_id', $playerId)->first();
+        
+        if (!$player) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player not found'
+            ], 404);
+        }
+        
+        // Check if player is in this game
+        if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player not in this game'
+            ], 403);
+        }
+        
+        return response()->json([
+            'success' => true,
+            'game' => [
+                'id' => $game->id,
+                'code' => $game->code,
+                'status' => $game->status,
+                'game_state' => $game->game_state,
+                'player_symbol' => $game->player1_id === $player->id ? 'X' : 'O'
+            ]
         ]);
     }
 
@@ -63,143 +164,177 @@ class GameController extends Controller
         $position = $request->input('position');
         $gameState = $request->input('game_state');
 
-        // For now, create a simple response and broadcast the move to all players in this game
-        $gameData = [
-            'game' => [
-                'code' => strtoupper($code),
-                'game_state' => $gameState,
-                'last_move' => [
-                    'grid' => $grid,
-                    'position' => $position,
-                    'player_id' => $playerId
-                ]
-            ]
-        ];
-
-        // Broadcast to all players in this game channel
-        try {
-            error_log('Broadcasting game update for code: ' . strtoupper($code));
-            GameUpdated::dispatch($gameData);
-            error_log('GameUpdated event dispatched successfully');
-        } catch (\Exception $e) {
-            // Continue without broadcasting if there's an issue
-            error_log('Broadcasting failed: ' . $e->getMessage());
+        // Find game and player
+        $game = Game::where('code', strtoupper($code))->first();
+        $player = Player::where('player_id', $playerId)->first();
+        
+        if (!$game || !$player) {
+            return response()->json(['success' => false, 'message' => 'Game or player not found'], 404);
         }
+        
+        // Verify player is in game
+        if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
+            return response()->json(['success' => false, 'message' => 'Player not in game'], 403);
+        }
+        
+        // Update game state and move count
+        $game->update([
+            'game_state' => $gameState,
+            'move_count' => $game->move_count + 1,
+            'last_move_at' => now()
+        ]);
+        
+        // Check for game end and update stats if needed
+        if ($gameState['game_over']) {
+            $this->endGame($game, $gameState['winner']);
+        }
+        
+        // Broadcast move
+        broadcast(new GameUpdated($game->code, $gameState, 'move_made', [
+            'grid' => $grid,
+            'position' => $position,
+            'player_id' => $playerId
+        ]));
 
         return response()->json([
             'success' => true,
-            'game' => $gameData['game']
+            'game_state' => $gameState
         ]);
     }
 
-    public function getGame(string $code): JsonResponse
+    public function resignGame(Request $request, string $code): JsonResponse
     {
-        $game = Game::where('code', $code)->first();
-
-        if (!$game) {
-            return response()->json(['success' => false, 'message' => 'Game not found'], 404);
-        }
-
-        return response()->json(['success' => true, 'game' => $game]);
-    }
-
-    public function getQrCode(string $code)
-    {
-        $url = url("/join/{$code}");
+        $playerId = $request->input('player_id');
         
-        $qrCode = QrCode::create($url)
-            ->setEncoding(new Encoding('UTF-8'))
-            ->setSize(300)
-            ->setMargin(10);
-
-        $writer = new PngWriter();
-        $result = $writer->write($qrCode);
-
-        return response($result->getString())
-            ->header('Content-Type', $result->getMimeType());
+        $game = Game::where('code', strtoupper($code))->first();
+        $player = Player::where('player_id', $playerId)->first();
+        
+        if (!$game || !$player) {
+            return response()->json(['success' => false, 'message' => 'Game or player not found'], 404);
+        }
+        
+        // Verify player is in game
+        if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
+            return response()->json(['success' => false, 'message' => 'Player not in game'], 403);
+        }
+        
+        // Determine winner (opponent)
+        $resigningPlayerSymbol = $game->player1_id === $player->id ? 'X' : 'O';
+        $winnerSymbol = $resigningPlayerSymbol === 'X' ? 'O' : 'X';
+        
+        // End game due to resignation
+        $this->endGame($game, $winnerSymbol, 'resign');
+        
+        // Broadcast resignation
+        broadcast(new GameUpdated($game->code, $game->game_state, 'player_resigned', [
+            'resigning_player' => $resigningPlayerSymbol,
+            'winner' => $winnerSymbol
+        ]));
+        
+        return response()->json([
+            'success' => true,
+            'message' => 'Game resigned successfully'
+        ]);
     }
 
-    private function isValidMove(array $gameState, int $grid, int $position): bool
+    public function getPlayerStats(Request $request): JsonResponse
     {
-        // Check if the position is empty
-        if ($gameState['grids'][$grid][$position] !== null) {
-            return false;
+        $playerId = $request->input('player_id');
+        
+        $player = Player::where('player_id', $playerId)->with('stats')->first();
+        
+        if (!$player) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Player not found'
+            ], 404);
         }
-
-        // Check if the grid is already won
-        if ($gameState['grid_winners'][$grid] !== null) {
-            return false;
-        }
-
-        // Check active grid restriction
-        if ($gameState['active_grid'] !== null && $gameState['active_grid'] !== $grid) {
-            return false;
-        }
-
-        return true;
+        
+        $stats = $player->stats ?: new PlayerStats();
+        
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'games_played' => $stats->games_played,
+                'games_won' => $stats->games_won,
+                'games_lost' => $stats->games_lost,
+                'games_abandoned' => $stats->games_abandoned,
+                'total_time_played_seconds' => $stats->total_time_played_seconds,
+                'current_days_played_streak' => $stats->current_days_played_streak,
+                'longest_days_played_streak' => $stats->longest_days_played_streak,
+                'current_unbeaten_streak' => $stats->current_unbeaten_streak,
+                'longest_unbeaten_streak' => $stats->longest_unbeaten_streak,
+                'last_played_date' => $stats->last_played_date?->format('Y-m-d')
+            ]
+        ]);
     }
 
-    private function processMove(array $gameState, int $grid, int $position, string $player): array
+    public function getGlobalStats(): JsonResponse
     {
-        // Place the move
-        $gameState['grids'][$grid][$position] = $player;
-
-        // Check if this grid is won
-        if ($this->checkGridWin($gameState['grids'][$grid], $player)) {
-            $gameState['grid_winners'][$grid] = $player;
-        }
-
-        // Check if the overall game is won
-        if ($this->checkOverallWin($gameState['grid_winners'], $player)) {
-            $gameState['game_over'] = true;
-            $gameState['winner'] = $player;
-        } elseif ($this->isGameDraw($gameState)) {
-            $gameState['game_over'] = true;
-            $gameState['winner'] = 'draw';
-        } else {
-            // Set next active grid
-            $gameState['active_grid'] = $gameState['grid_winners'][$position] === null ? $position : null;
-            $gameState['current_player'] = $player === 'X' ? 'O' : 'X';
-        }
-
-        return $gameState;
+        $totalGames = Game::count();
+        $activeGames = Game::where('status', 'active')->count();
+        $completedGames = Game::where('status', 'completed')->count();
+        $totalPlayers = Player::count();
+        $avgGameDuration = Game::whereNotNull('ended_at')
+            ->whereNotNull('started_at')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM ended_at - started_at)) as avg_duration')
+            ->value('avg_duration');
+        
+        $avgMovesPerGame = Game::where('move_count', '>', 0)->avg('move_count');
+        
+        return response()->json([
+            'success' => true,
+            'stats' => [
+                'total_games' => $totalGames,
+                'active_games' => $activeGames,
+                'completed_games' => $completedGames,
+                'total_players' => $totalPlayers,
+                'avg_game_duration_seconds' => round($avgGameDuration ?? 0),
+                'avg_moves_per_game' => round($avgMovesPerGame ?? 0, 1)
+            ]
+        ]);
     }
 
-    private function checkGridWin(array $grid, string $player): bool
+    private function endGame(Game $game, ?string $winnerSymbol, string $endReason = 'win'): void
     {
-        $winPatterns = [
-            [0, 1, 2], [3, 4, 5], [6, 7, 8], // rows
-            [0, 3, 6], [1, 4, 7], [2, 5, 8], // columns
-            [0, 4, 8], [2, 4, 6] // diagonals
-        ];
-
-        foreach ($winPatterns as $pattern) {
-            if ($grid[$pattern[0]] === $player && 
-                $grid[$pattern[1]] === $player && 
-                $grid[$pattern[2]] === $player) {
-                return true;
-            }
+        // Update game record
+        $game->update([
+            'status' => 'completed',
+            'winner_symbol' => $winnerSymbol,
+            'end_reason' => $endReason,
+            'ended_at' => now()
+        ]);
+        
+        // Calculate game duration
+        $durationSeconds = $game->started_at && $game->ended_at 
+            ? $game->started_at->diffInSeconds($game->ended_at)
+            : 0;
+        
+        // Update player stats
+        $player1 = Player::find($game->player1_id);
+        $player2 = Player::find($game->player2_id);
+        
+        if ($player1 && $player1->stats) {
+            $result = $this->getPlayerResult($winnerSymbol, 'X', $endReason);
+            $player1->stats->recordGameResult($result, $durationSeconds);
         }
-
-        return false;
-    }
-
-    private function checkOverallWin(array $gridWinners, string $player): bool
-    {
-        return $this->checkGridWin($gridWinners, $player);
-    }
-
-    private function isGameDraw(array $gameState): bool
-    {
-        foreach ($gameState['grids'] as $i => $grid) {
-            if ($gameState['grid_winners'][$i] === null) {
-                foreach ($grid as $cell) {
-                    if ($cell === null) {
-                        return false;
-                    }
-                }
-            }
+        
+        if ($player2 && $player2->stats) {
+            $result = $this->getPlayerResult($winnerSymbol, 'O', $endReason);
+            $player2->stats->recordGameResult($result, $durationSeconds);
         }
-        return true;
+    }
+    
+    private function getPlayerResult(?string $winnerSymbol, string $playerSymbol, string $endReason): string
+    {
+        if ($endReason === 'resign' || $endReason === 'abandon') {
+            return $winnerSymbol === $playerSymbol ? 'win' : 'abandon';
+        }
+        
+        if ($winnerSymbol === null) {
+            return 'draw';
+        }
+        
+        return $winnerSymbol === $playerSymbol ? 'win' : 'loss';
     }
 }

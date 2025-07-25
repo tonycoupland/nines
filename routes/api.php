@@ -20,9 +20,13 @@ Route::get('/config', function () {
 
 Route::post('/games', [GameController::class, 'createGame']);
 Route::post('/games/{code}/join', [GameController::class, 'joinGame']);
-Route::post('/games/{code}/move', [GameController::class, 'makeMove']);
 Route::get('/games/{code}', [GameController::class, 'getGame']);
-Route::get('/games/{code}/qr', [GameController::class, 'getQrCode']);
+Route::post('/games/{code}/move', [GameController::class, 'makeMove']);
+Route::post('/games/{code}/resign', [GameController::class, 'resignGame']);
+
+// Stats routes
+Route::get('/player/stats', [GameController::class, 'getPlayerStats']);
+Route::get('/stats/global', [GameController::class, 'getGlobalStats']);
 
 // Test broadcast endpoint
 Route::post('/test-broadcast', function() {

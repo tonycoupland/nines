@@ -14,18 +14,25 @@ class Game extends Model
         'game_state',
         'status',
         'winner',
-        'last_move_at'
+        'last_move_at',
+        'move_count',
+        'started_at',
+        'ended_at',
+        'end_reason',
+        'winner_symbol'
     ];
 
     protected $casts = [
         'game_state' => 'array',
-        'last_move_at' => 'datetime'
+        'last_move_at' => 'datetime',
+        'started_at' => 'datetime',
+        'ended_at' => 'datetime'
     ];
 
     public static function generateCode(): string
     {
         do {
-            $code = strtoupper(Str::random(6));
+            $code = strtoupper(Str::random(4));
         } while (self::where('code', $code)->exists());
         
         return $code;
