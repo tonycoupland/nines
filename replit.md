@@ -50,6 +50,18 @@ Preferred communication style: Simple, everyday language.
 - ✓ Added comprehensive debugging logs for game state validation
 - ✓ Improved mobile layout stability to prevent breaking with symbols
 
+**July 25, 2025:**
+- ✓ Changed game codes from 6-character to 4-character letters as requested
+- ✓ Implemented URL routing for game resumption with game codes in URL path
+- ✓ Added player persistence via cookies for automatic game rejoining 
+- ✓ Created comprehensive resign functionality with confirmation dialog
+- ✓ Built full statistics system with client and server-side tracking
+- ✓ Added players table and player_stats table with detailed tracking
+- ✓ Implemented automatic player creation when accessing stats endpoint
+- ✓ Created beautiful stats screen with personal and global statistics
+- ✓ Enhanced database with game tracking fields (move_count, duration, end_reason)
+- ✓ Added API endpoints for stats, game resumption, and resign functionality
+
 ## System Architecture
 
 The current active version uses **Full-Stack Real-time Multiplayer Architecture**:

@@ -241,29 +241,25 @@ class GameController extends Controller
     {
         $playerId = $request->input('player_id');
         
-        $player = Player::where('player_id', $playerId)->with('stats')->first();
+        // Auto-create player if it doesn't exist
+        $player = Player::findOrCreateByPlayerId($playerId);
         
-        if (!$player) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player not found'
-            ], 404);
-        }
-        
-        $stats = $player->stats ?: new PlayerStats();
+        // Load stats relationship
+        $player->load('stats');
+        $stats = $player->stats;
         
         return response()->json([
             'success' => true,
             'stats' => [
-                'games_played' => $stats->games_played,
-                'games_won' => $stats->games_won,
-                'games_lost' => $stats->games_lost,
-                'games_abandoned' => $stats->games_abandoned,
-                'total_time_played_seconds' => $stats->total_time_played_seconds,
-                'current_days_played_streak' => $stats->current_days_played_streak,
-                'longest_days_played_streak' => $stats->longest_days_played_streak,
-                'current_unbeaten_streak' => $stats->current_unbeaten_streak,
-                'longest_unbeaten_streak' => $stats->longest_unbeaten_streak,
+                'games_played' => $stats->games_played ?? 0,
+                'games_won' => $stats->games_won ?? 0,
+                'games_lost' => $stats->games_lost ?? 0,
+                'games_abandoned' => $stats->games_abandoned ?? 0,
+                'total_time_played_seconds' => $stats->total_time_played_seconds ?? 0,
+                'current_days_played_streak' => $stats->current_days_played_streak ?? 0,
+                'longest_days_played_streak' => $stats->longest_days_played_streak ?? 0,
+                'current_unbeaten_streak' => $stats->current_unbeaten_streak ?? 0,
+                'longest_unbeaten_streak' => $stats->longest_unbeaten_streak ?? 0,
                 'last_played_date' => $stats->last_played_date?->format('Y-m-d')
             ]
         ]);
