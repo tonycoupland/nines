@@ -273,7 +273,7 @@ class GameController extends Controller
         $totalPlayers = Player::count();
         $avgGameDuration = Game::whereNotNull('ended_at')
             ->whereNotNull('started_at')
-            ->selectRaw('AVG(EXTRACT(EPOCH FROM ended_at - started_at)) as avg_duration')
+            ->selectRaw('AVG(EXTRACT(EPOCH FROM (ended_at - started_at))) as avg_duration')
             ->value('avg_duration');
         
         $avgMovesPerGame = Game::where('move_count', '>', 0)->avg('move_count');
