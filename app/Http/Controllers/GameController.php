@@ -147,7 +147,7 @@ class GameController extends Controller
                 'code' => $game->code,
                 'status' => $game->status,
                 'game_state' => $game->game_state,
-                'player_symbol' => $game->player1_id === $player->id ? 'X' : 'O'
+                'player_symbol' => (string)$game->player1_id === (string)$player->id ? 'X' : 'O'
             ]
         ]);
     }
