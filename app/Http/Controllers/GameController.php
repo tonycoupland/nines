@@ -180,8 +180,9 @@ class GameController extends Controller
         ]);
         
         // Check for game end and update stats if needed
-        if ($gameState['game_over']) {
-            $this->endGame($game, $gameState['winner']);
+        if (isset($gameState['game_over']) && $gameState['game_over']) {
+            $winner = $gameState['winner'] ?? null;
+            $this->endGame($game, $winner);
         }
         
         // Broadcast move
