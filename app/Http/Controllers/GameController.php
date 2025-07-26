@@ -179,14 +179,17 @@ class GameController extends Controller
             'last_move_at' => now()
         ]);
         
+        // Reload the game to get fresh data after update
+        $game->refresh();
+        
         // Check for game end and update stats if needed
         if (isset($gameState['game_over']) && $gameState['game_over']) {
             $winner = $gameState['winner'] ?? null;
             $this->endGame($game, $winner);
         }
         
-        // Broadcast move
-        broadcast(new GameUpdated($game->code, $gameState, 'move_made', [
+        // Broadcast move (use the refreshed game state which will be properly cast)
+        broadcast(new GameUpdated($game->code, $game->game_state, 'move_made', [
             'grid' => $grid,
             'position' => $position,
             'player_id' => $playerId
