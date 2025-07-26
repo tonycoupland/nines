@@ -72,7 +72,7 @@ class GameController extends Controller
         
         if ($game->status !== 'waiting') {
             // Check if this player is already in the game
-            if ($game->player1_id === $player->id || $game->player2_id === $player->id) {
+            if ((string)$game->player1_id === (string)$player->id || (string)$game->player2_id === (string)$player->id) {
                 return response()->json([
                     'success' => true,
                     'game' => [
@@ -130,8 +130,10 @@ class GameController extends Controller
         // Create or find player record (same as in create/join)
         $player = Player::findOrCreateByPlayerId($playerId);
         
-        // Check if player is in this game
-        if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
+
+        
+        // Check if player is in this game (handle type casting)
+        if ((string)$game->player1_id !== (string)$player->id && (string)$game->player2_id !== (string)$player->id) {
             return response()->json([
                 'success' => false,
                 'message' => 'Player not in this game'
