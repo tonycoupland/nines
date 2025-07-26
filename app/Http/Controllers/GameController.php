@@ -159,16 +159,16 @@ class GameController extends Controller
         $position = $request->input('position');
         $gameState = $request->input('game_state');
 
-        // Find game and player
+        // Find game and player (use findOrCreateByPlayerId for consistency)
         $game = Game::where('code', strtoupper($code))->first();
-        $player = Player::where('player_id', $playerId)->first();
+        $player = Player::findOrCreateByPlayerId($playerId);
         
-        if (!$game || !$player) {
-            return response()->json(['success' => false, 'message' => 'Game or player not found'], 404);
+        if (!$game) {
+            return response()->json(['success' => false, 'message' => 'Game not found'], 404);
         }
         
-        // Verify player is in game
-        if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
+        // Verify player is in game (with type casting)
+        if ((string)$game->player1_id !== (string)$player->id && (string)$game->player2_id !== (string)$player->id) {
             return response()->json(['success' => false, 'message' => 'Player not in game'], 403);
         }
         
@@ -202,19 +202,19 @@ class GameController extends Controller
         $playerId = $request->input('player_id');
         
         $game = Game::where('code', strtoupper($code))->first();
-        $player = Player::where('player_id', $playerId)->first();
+        $player = Player::findOrCreateByPlayerId($playerId);
         
-        if (!$game || !$player) {
-            return response()->json(['success' => false, 'message' => 'Game or player not found'], 404);
+        if (!$game) {
+            return response()->json(['success' => false, 'message' => 'Game not found'], 404);
         }
         
-        // Verify player is in game
-        if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
+        // Verify player is in game (with type casting)
+        if ((string)$game->player1_id !== (string)$player->id && (string)$game->player2_id !== (string)$player->id) {
             return response()->json(['success' => false, 'message' => 'Player not in game'], 403);
         }
         
-        // Determine winner (opponent)
-        $resigningPlayerSymbol = $game->player1_id === $player->id ? 'X' : 'O';
+        // Determine winner (opponent) with type casting
+        $resigningPlayerSymbol = (string)$game->player1_id === (string)$player->id ? 'X' : 'O';
         $winnerSymbol = $resigningPlayerSymbol === 'X' ? 'O' : 'X';
         
         // End game due to resignation
