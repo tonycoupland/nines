@@ -64,6 +64,14 @@ Preferred communication style: Simple, everyday language.
 - ✓ Fixed SQL compatibility issue - now supports both PostgreSQL and MariaDB/MySQL
 - ✓ Added database-agnostic time duration calculations for production deployment
 
+**July 26, 2025:**
+- ✓ Resolved critical turn indicator visibility issue in local game mode
+- ✓ Disabled webpack bundling for easier debugging and development
+- ✓ Implemented direct JavaScript loading with CDN dependencies
+- ✓ Fixed connection status to only show for online games, hidden for local games
+- ✓ Enhanced debugging capabilities with source code visibility
+- ✓ Improved user experience by removing unnecessary "Connected" status in local mode
+
 ## System Architecture
 
 The current active version uses **Full-Stack Real-time Multiplayer Architecture**:

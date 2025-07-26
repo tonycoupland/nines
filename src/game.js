@@ -546,6 +546,16 @@ function showGameScreen() {
         console.error('game-info element not found!');
     }
     
+    // Show/hide connection status based on game type
+    const connectionStatus = document.getElementById('connection-status');
+    if (connectionStatus) {
+        if (gameState.isOnline) {
+            connectionStatus.style.display = 'block';
+        } else {
+            connectionStatus.style.display = 'none';
+        }
+    }
+    
     // Show resign button for online games
     const resignBtn = document.getElementById('resign-btn');
     if (gameState.isOnline && !gameState.gameWon) {
@@ -672,6 +682,12 @@ function startLocalGame() {
     
     showGameScreen();
     document.getElementById('game-code-display').textContent = 'Local Game';
+    
+    // Hide connection status for local games
+    const connectionStatus = document.getElementById('connection-status');
+    if (connectionStatus) {
+        connectionStatus.style.display = 'none';
+    }
 }
 
 function newGame() {
