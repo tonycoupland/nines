@@ -374,7 +374,21 @@ async function joinOnlineGame(code) {
             console.log('🎮 Current player:', gameState.currentPlayer);
             
             if (data.game.game_state) {
+                // Preserve critical player info when merging game state
+                const mySymbol = gameState.mySymbol;
+                const playerId = gameState.playerId;
+                const isOnline = gameState.isOnline;
+                const gameCode = gameState.gameCode;
+                
                 gameState = { ...gameState, ...data.game.game_state };
+                
+                // Restore preserved values
+                gameState.mySymbol = mySymbol;
+                gameState.playerId = playerId;
+                gameState.isOnline = isOnline;
+                gameState.gameCode = gameCode;
+                
+                console.log('🔧 Merged game state (join), preserved mySymbol:', gameState.mySymbol);
             }
             
             updateGameUrl(gameState.gameCode);
@@ -411,7 +425,21 @@ async function resumeGame(code) {
             console.log('🎮 Current player:', gameState.currentPlayer);
             
             if (data.game.game_state) {
+                // Preserve critical player info when merging game state
+                const mySymbol = gameState.mySymbol;
+                const playerId = gameState.playerId;
+                const isOnline = gameState.isOnline;
+                const gameCode = gameState.gameCode;
+                
                 gameState = { ...gameState, ...data.game.game_state };
+                
+                // Restore preserved values
+                gameState.mySymbol = mySymbol;
+                gameState.playerId = playerId;
+                gameState.isOnline = isOnline;
+                gameState.gameCode = gameCode;
+                
+                console.log('🔧 Merged game state (resume), preserved mySymbol:', gameState.mySymbol);
             }
             
             subscribeToGameUpdates(gameState.gameCode);
