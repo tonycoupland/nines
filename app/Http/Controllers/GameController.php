@@ -95,7 +95,7 @@ class GameController extends Controller
         // Join game as player 2
         $game->update([
             'player2_id' => $player->id,
-            'status' => 'active'
+            'status' => 'playing'
         ]);
         
         // Broadcast game update
