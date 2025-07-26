@@ -316,12 +316,16 @@ async function createOnlineGame() {
             gameState.gameCode = data.game.code;
             gameState.mySymbol = data.game.player_symbol;
             
+            // Debug logging for symbol assignment
+            console.log('🎮 CREATED GAME - Your symbol:', gameState.mySymbol);
+            console.log('🎮 Current player:', gameState.currentPlayer);
+            
             updateGameUrl(gameState.gameCode);
             subscribeToGameUpdates(gameState.gameCode);
             
             showGameScreen();
             document.getElementById('game-code-display').textContent = `Game Code: ${gameState.gameCode}`;
-            showMessage('Game created! Share this code with your opponent.', 'success');
+            showMessage(`Game created! You are player ${gameState.mySymbol}. Share this code with your opponent.`, 'success');
             
             return data;
         } else {
@@ -365,6 +369,10 @@ async function joinOnlineGame(code) {
             gameState.gameCode = data.game.code;
             gameState.mySymbol = data.game.player_symbol;
             
+            // Debug logging for symbol assignment
+            console.log('🎮 JOINED GAME - Your symbol:', gameState.mySymbol);
+            console.log('🎮 Current player:', gameState.currentPlayer);
+            
             if (data.game.game_state) {
                 gameState = { ...gameState, ...data.game.game_state };
             }
@@ -374,7 +382,7 @@ async function joinOnlineGame(code) {
             
             showGameScreen();
             document.getElementById('game-code-display').textContent = `Game Code: ${gameState.gameCode}`;
-            showMessage(data.message, 'success');
+            showMessage(`${data.message} - You are player ${gameState.mySymbol}`, 'success');
             
             updateDisplay();
             return data;
@@ -398,6 +406,10 @@ async function resumeGame(code) {
             gameState.mySymbol = data.game.player_symbol;
             gameState.gameStartTime = Date.now();
             
+            // Debug logging for symbol assignment
+            console.log('🎮 RESUMED GAME - Your symbol:', gameState.mySymbol);
+            console.log('🎮 Current player:', gameState.currentPlayer);
+            
             if (data.game.game_state) {
                 gameState = { ...gameState, ...data.game.game_state };
             }
@@ -406,7 +418,7 @@ async function resumeGame(code) {
             
             showGameScreen();
             document.getElementById('game-code-display').textContent = `Game Code: ${gameState.gameCode}`;
-            showMessage('Game resumed!', 'success');
+            showMessage(`Game resumed! You are player ${gameState.mySymbol}`, 'success');
             
             updateDisplay();
             return true;
@@ -834,6 +846,8 @@ function updateDisplay() {
         currentPlayerDisplay.textContent = `🎉 Player ${gameState.winner} wins!`;
     } else if (gameState.isOnline) {
         const isMyTurn = gameState.currentPlayer === gameState.mySymbol;
+        // Debug logging to help identify issues
+        console.log('🔄 Display update - My symbol:', gameState.mySymbol, 'Current player:', gameState.currentPlayer, 'Is my turn:', isMyTurn);
         currentPlayerDisplay.textContent = isMyTurn ? 
             `Your turn (${gameState.mySymbol})` : 
             `Opponent's turn (${gameState.currentPlayer})`;
