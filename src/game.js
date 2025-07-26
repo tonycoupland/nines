@@ -504,6 +504,13 @@ function showMenu() {
     document.getElementById('join-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'none';
     document.getElementById('stats-screen').style.display = 'none';
+    
+    // Hide game info when returning to menu
+    const gameInfo = document.getElementById('game-info');
+    if (gameInfo) {
+        gameInfo.classList.remove('visible');
+    }
+    
     clearGameUrl();
 }
 
@@ -520,13 +527,24 @@ function showJoinGame() {
 }
 
 function showGameScreen() {
+    console.log('showGameScreen called, gameState:', { 
+        isOnline: gameState.isOnline, 
+        currentPlayer: gameState.currentPlayer 
+    });
+    
     document.getElementById('menu-screen').style.display = 'none';
     document.getElementById('join-screen').style.display = 'none';
     document.getElementById('game-screen').style.display = 'block';
     document.getElementById('stats-screen').style.display = 'none';
     
     // Show game info section
-    document.getElementById('game-info').classList.add('visible');
+    const gameInfo = document.getElementById('game-info');
+    if (gameInfo) {
+        gameInfo.classList.add('visible');
+        console.log('Added visible class to game-info, classList:', gameInfo.classList.toString());
+    } else {
+        console.error('game-info element not found!');
+    }
     
     // Show resign button for online games
     const resignBtn = document.getElementById('resign-btn');
@@ -800,6 +818,13 @@ async function initializeApp() {
     await initializeEcho();
     initializePlayer();
     await loadPlayerStats();
+    
+    // Debug: Check if elements exist
+    console.log('DOM elements check:', {
+        gameInfo: !!document.getElementById('game-info'),
+        currentPlayerDisplay: !!document.getElementById('current-player-display'),
+        gameScreen: !!document.getElementById('game-screen')
+    });
     
     // Check if there's a game code in the URL
     const urlGameCode = checkUrlForGame();
