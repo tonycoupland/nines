@@ -15,24 +15,23 @@ class GameUpdated implements ShouldBroadcastNow
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
-    public $game;
+    public string $gameCode;
+    public array $gameState;
+    public string $eventType;
+    public array $eventData;
 
-    public function __construct($game)
+    public function __construct(string $gameCode, array $gameState, string $eventType = 'move_made', array $eventData = [])
     {
-        $this->game = $game;
+        $this->gameCode = $gameCode;
+        $this->gameState = $gameState;
+        $this->eventType = $eventType;
+        $this->eventData = $eventData;
     }
 
     public function broadcastOn(): array
     {
-        $gameCode = is_object($this->game) && isset($this->game->code) 
-            ? $this->game->code 
-            : $this->game['game']['code'];
-        
-        $channelName = "game.{$gameCode}";
-        error_log("Broadcasting on channel: {$channelName}");
-            
         return [
-            new Channel($channelName)
+            new Channel("game.{$this->gameCode}")
         ];
     }
 
@@ -43,11 +42,10 @@ class GameUpdated implements ShouldBroadcastNow
 
     public function broadcastWith(): array
     {
-        $data = is_object($this->game) && isset($this->game->code)
-            ? ['game' => $this->game]
-            : $this->game;
-        
-        error_log("Broadcasting data: " . json_encode($data));
-        return $data;
+        return [
+            'game_state' => $this->gameState,
+            'event_type' => $this->eventType,
+            'event_data' => $this->eventData
+        ];
     }
 }
