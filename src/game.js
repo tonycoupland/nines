@@ -525,6 +525,9 @@ function showGameScreen() {
     document.getElementById('game-screen').style.display = 'block';
     document.getElementById('stats-screen').style.display = 'none';
     
+    // Show game info section
+    document.getElementById('game-info').classList.add('visible');
+    
     // Show resign button for online games
     const resignBtn = document.getElementById('resign-btn');
     if (gameState.isOnline && !gameState.gameWon) {
@@ -722,11 +725,24 @@ function updateDisplay() {
         const gridDiv = document.getElementById(`grid-${gridIndex}`);
         
         // Update grid winner display
+        const existingWinnerOverlay = gridDiv.querySelector('.grid-winner');
         if (gameState.gridWinners[gridIndex]) {
             gridDiv.classList.add('won');
             gridDiv.classList.add(`won-${gameState.gridWinners[gridIndex].toLowerCase()}`);
+            
+            // Add winner overlay if not already present
+            if (!existingWinnerOverlay) {
+                const winnerOverlay = document.createElement('div');
+                winnerOverlay.className = 'grid-winner';
+                winnerOverlay.textContent = gameState.gridWinners[gridIndex];
+                winnerOverlay.style.color = gameState.gridWinners[gridIndex] === 'X' ? '#e74c3c' : '#3498db';
+                gridDiv.appendChild(winnerOverlay);
+            }
         } else {
             gridDiv.classList.remove('won', 'won-x', 'won-o');
+            if (existingWinnerOverlay) {
+                existingWinnerOverlay.remove();
+            }
         }
         
         // Update active grid highlighting
