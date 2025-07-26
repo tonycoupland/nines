@@ -286,6 +286,20 @@ function makeMove(gridIndex, cellIndex) {
 // Online game functions
 async function createOnlineGame() {
     try {
+        // Reset game state for new online game
+        gameState = {
+            grids: Array(9).fill(null).map(() => Array(9).fill('')),
+            currentPlayer: 'X',
+            activeGrid: null,
+            gameWon: false,
+            winner: null,
+            gridWinners: Array(9).fill(null),
+            isOnline: true,
+            mySymbol: 'X',
+            gameCode: null,
+            gameStartTime: Date.now()
+        };
+        
         const response = await fetch('/api/games', {
             method: 'POST',
             headers: {
@@ -299,10 +313,8 @@ async function createOnlineGame() {
         const data = await response.json();
         
         if (data.success) {
-            gameState.isOnline = true;
             gameState.gameCode = data.game.code;
             gameState.mySymbol = data.game.player_symbol;
-            gameState.gameStartTime = Date.now();
             
             updateGameUrl(gameState.gameCode);
             subscribeToGameUpdates(gameState.gameCode);
@@ -323,6 +335,20 @@ async function createOnlineGame() {
 
 async function joinOnlineGame(code) {
     try {
+        // Reset game state for joining new online game
+        gameState = {
+            grids: Array(9).fill(null).map(() => Array(9).fill('')),
+            currentPlayer: 'X',
+            activeGrid: null,
+            gameWon: false,
+            winner: null,
+            gridWinners: Array(9).fill(null),
+            isOnline: true,
+            mySymbol: 'O',
+            gameCode: null,
+            gameStartTime: Date.now()
+        };
+        
         const response = await fetch(`/api/games/${code}/join`, {
             method: 'POST',
             headers: {
@@ -336,10 +362,8 @@ async function joinOnlineGame(code) {
         const data = await response.json();
         
         if (data.success) {
-            gameState.isOnline = true;
             gameState.gameCode = data.game.code;
             gameState.mySymbol = data.game.player_symbol;
-            gameState.gameStartTime = Date.now();
             
             if (data.game.game_state) {
                 gameState = { ...gameState, ...data.game.game_state };
