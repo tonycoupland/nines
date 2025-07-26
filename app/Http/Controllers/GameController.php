@@ -127,15 +127,8 @@ class GameController extends Controller
             ], 404);
         }
         
-        // Find player record
-        $player = Player::where('player_id', $playerId)->first();
-        
-        if (!$player) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Player not found'
-            ], 404);
-        }
+        // Create or find player record (same as in create/join)
+        $player = Player::findOrCreateByPlayerId($playerId);
         
         // Check if player is in this game
         if ($game->player1_id !== $player->id && $game->player2_id !== $player->id) {
