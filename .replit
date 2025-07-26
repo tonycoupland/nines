@@ -2,7 +2,7 @@ modules = ["python-3.11", "nodejs-20", "postgresql-16"]
 
 [nix]
 channel = "stable-24_05"
-packages = ["nodejs", "cordova", "php82", "php82Extensions.pgsql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.openssl", "php82Extensions.tokenizer", "php82Extensions.zip"]
+packages = ["nodejs", "cordova", "php82", "php82Extensions.pgsql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.openssl", "php82Extensions.tokenizer", "php82Extensions.zip", "imagemagick"]
 
 [workflows]
 runButton = "Project"
