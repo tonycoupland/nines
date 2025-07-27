@@ -22,18 +22,6 @@ args = "Reverb WebSocket"
 
 [[workflows.workflow.tasks]]
 task = "workflow.run"
-args = "Phaser Frontend"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Build Production"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
-args = "Build Development"
-
-[[workflows.workflow.tasks]]
-task = "workflow.run"
 args = "Main Server"
 
 [[workflows.workflow]]
@@ -52,31 +40,6 @@ author = "agent"
 [[workflows.workflow.tasks]]
 task = "shell.exec"
 args = "php artisan reverb:start --host=0.0.0.0 --port=8081"
-
-[[workflows.workflow]]
-name = "Phaser Frontend"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "./node_modules/.bin/webpack serve --config webpack.config.cjs --mode=development --host=0.0.0.0 --port=3000"
-waitForPort = 3000
-
-[[workflows.workflow]]
-name = "Build Production"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx webpack --config webpack.config.cjs --mode=production"
-
-[[workflows.workflow]]
-name = "Build Development"
-author = "agent"
-
-[[workflows.workflow.tasks]]
-task = "shell.exec"
-args = "npx webpack --config webpack.config.cjs --mode=development"
 
 [[workflows.workflow]]
 name = "Main Server"
