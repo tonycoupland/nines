@@ -1,7 +1,7 @@
 // Enhanced Nines Game with URL routing, player persistence, resign, and stats
 
 // Initialize Laravel Echo for websockets (using global variables from CDN)
-window.Pusher = window.Pusher;
+window.Pusher = window.Pusher || window.Pusher;
 let echo = null;
 
 // Player management and persistence
@@ -93,7 +93,13 @@ async function initializeEcho() {
         const config = await response.json();
         const reverbConfig = config.reverb;
         
-        echo = new window.Echo({
+        const EchoClass = window.Echo || window.LaravelEcho;
+        if (!EchoClass) {
+            console.error('Laravel Echo not found in global scope');
+            return;
+        }
+        
+        echo = new EchoClass({
             broadcaster: 'reverb',
             key: reverbConfig.key,
             wsHost: reverbConfig.host,
@@ -105,31 +111,41 @@ async function initializeEcho() {
         
         console.log('Echo initialized with config:', reverbConfig);
         
-        // Connection event listeners
-        echo.connector.pusher.connection.bind('connected', () => {
-            console.log('WebSocket connection established');
-            updateConnectionStatus(true);
-        });
-        
-        echo.connector.pusher.connection.bind('error', (error) => {
-            console.error('WebSocket connection error:', error);
-            updateConnectionStatus(false);
-        });
-        
-        echo.connector.pusher.connection.bind('disconnected', () => {
-            console.log('WebSocket connection lost');
-            updateConnectionStatus(false);
-        });
-        
-        echo.connector.pusher.connection.bind('unavailable', () => {
-            console.error('WebSocket connection unavailable');
-            updateConnectionStatus(false);
-        });
+        // Connection event listeners (with safety checks)
+        if (echo && echo.connector && echo.connector.pusher) {
+            echo.connector.pusher.connection.bind('connected', () => {
+                console.log('WebSocket connection established');
+                updateConnectionStatus(true);
+            });
+            
+            echo.connector.pusher.connection.bind('error', (error) => {
+                console.error('WebSocket connection error:', error);
+                updateConnectionStatus(false);
+            });
+            
+            echo.connector.pusher.connection.bind('disconnected', () => {
+                console.log('WebSocket connection lost');
+                updateConnectionStatus(false);
+            });
+            
+            echo.connector.pusher.connection.bind('unavailable', () => {
+                console.error('WebSocket connection unavailable');
+                updateConnectionStatus(false);
+            });
+        } else {
+            console.warn('Echo connector not fully initialized, skipping connection event listeners');
+        }
         
     } catch (error) {
         console.error('Failed to load config, using defaults:', error);
         
-        echo = new window.Echo({
+        const EchoClass = window.Echo || window.LaravelEcho;
+        if (!EchoClass) {
+            console.error('Laravel Echo not found in global scope');
+            return;
+        }
+        
+        echo = new EchoClass({
             broadcaster: 'reverb',
             key: 'local-key',
             wsHost: window.location.hostname,

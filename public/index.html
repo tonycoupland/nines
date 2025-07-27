@@ -506,7 +506,7 @@
         <header>
             <h1>🎮 NINES 🎮</h1>
             <div class="subtitle">The Ultimate 9-Grid Strategy Game</div>
-            <div style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">v2.1.17 - Fixed Script Loading</div>
+            <div style="font-size: 0.8em; opacity: 0.7; margin-top: 5px;">v2.1.18 - Echo Connection Fix</div>
         </header>
 
         <!-- Menu Screen -->
@@ -572,6 +572,15 @@
     <!-- Load dependencies -->
     <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.0/dist/echo.iife.js"></script>
+    
+    <!-- Debug Echo loading -->
+    <script>
+        console.log('Checking global variables after CDN load:');
+        console.log('window.Pusher:', typeof window.Pusher);
+        console.log('window.Echo:', typeof window.Echo);
+        console.log('window.LaravelEcho:', typeof window.LaravelEcho);
+        console.log('Available Echo properties:', window.Echo ? Object.keys(window.Echo) : 'N/A');
+    </script>
     
     <!-- Load game logic -->
     <script src="/game.js"></script>
