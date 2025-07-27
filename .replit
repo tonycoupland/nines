@@ -24,6 +24,10 @@ args = "Reverb WebSocket"
 task = "workflow.run"
 args = "Main Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Webpack Build"
+
 [[workflows.workflow]]
 name = "Laravel Backend"
 author = "agent"
@@ -49,6 +53,14 @@ author = "agent"
 task = "shell.exec"
 args = "php artisan serve --host=0.0.0.0 --port=5000"
 waitForPort = 5000
+
+[[workflows.workflow]]
+name = "Webpack Build"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "npx webpack --mode=development --watch"
 
 [[ports]]
 localPort = 3000

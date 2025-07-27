@@ -20,6 +20,13 @@ let playerStats = {
     last_played_date: null
 };
 
+// Import required dependencies
+import Echo from 'laravel-echo';
+import Pusher from 'pusher-js';
+
+// Make available globally
+window.Pusher = Pusher;
+
 // Game state
 let gameState = {
     grids: Array(9).fill(null).map(() => Array(9).fill('')),
@@ -98,7 +105,7 @@ async function initializeEcho() {
         return false;
     }
     
-    if (!window.Echo) {
+    if (!Echo) {
         console.error('Laravel Echo not available');
         return false;
     }
@@ -115,7 +122,7 @@ async function initializeEcho() {
         window.Pusher = window.Pusher;
         
         // Use dynamic configuration from server
-        window.echo = new window.Echo({
+        window.echo = new Echo({
             broadcaster: config.broadcaster || 'reverb',
             key: config.key || 'local-key',
             wsHost: config.host || window.location.hostname,
@@ -123,7 +130,7 @@ async function initializeEcho() {
             wssPort: config.wss_port || 8081,
             forceTLS: config.encrypted || false,
             enabledTransports: ['ws', 'wss'],
-            pusher: window.Pusher
+            pusher: Pusher
         });
         
         // Also assign to local variable for compatibility

@@ -500,7 +500,7 @@
             }
         }
     </style>
-</head>
+<script defer src="/bundle.js"></script></head>
 <body>
     <div class="container">
         <header>
@@ -569,20 +569,7 @@
         </div>
     </div>
 
-    <!-- Load dependencies -->
-    <script src="https://js.pusher.com/8.0.1/pusher.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/laravel-echo@1.15.0/dist/echo.iife.js"></script>
-    
-    <!-- Debug Echo loading -->
-    <script>
-        console.log('Checking global variables after CDN load:');
-        console.log('window.Pusher:', typeof window.Pusher);
-        console.log('window.Echo:', typeof window.Echo);
-        console.log('window.LaravelEcho:', typeof window.LaravelEcho);
-        console.log('Available Echo properties:', window.Echo ? Object.keys(window.Echo) : 'N/A');
-    </script>
-    
-    <!-- Load game logic -->
-    <script src="/game.js"></script>
+    <!-- Webpack bundled scripts -->
+    <script src="/bundle.js"></script>
 </body>
 </html>
