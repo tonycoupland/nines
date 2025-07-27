@@ -127,25 +127,44 @@ async function initializeEcho() {
         });
         
         console.log('Echo initialized successfully with Reverb');
+        console.log('Echo connector after init:', echo.connector);
+        
+        // Connect to the WebSocket
+        if (echo.connector && echo.connector.connect) {
+            console.log('Attempting to connect Echo...');
+            echo.connector.connect();
+        } else if (echo.connector && echo.connector.pusher) {
+            console.log('Attempting to connect via Pusher...');
+            echo.connector.pusher.connect();
+        }
+        
         echoInitialized = true;
         
-        // Wait for Echo connector to initialize
+        // Wait for Echo connector to establish connection
         return new Promise((resolve) => {
             let attempts = 0;
-            const checkConnector = () => {
+            const checkConnection = () => {
                 attempts++;
-                if (echo.connector) {
-                    console.log('Echo ready for channel subscription');
+                console.log(`Connection check attempt ${attempts}/15`);
+                console.log('Echo connector state:', echo?.connector);
+                console.log('Pusher connection state:', echo?.connector?.pusher?.connection?.state);
+                
+                // Check if Pusher is connected
+                if (echo?.connector?.pusher?.connection?.state === 'connected') {
+                    console.log('Echo WebSocket connection established!');
                     resolve(true);
-                } else if (attempts < 10) {
-                    console.log(`Waiting for Echo connector (attempt ${attempts}/10)...`);
-                    setTimeout(checkConnector, 200);
+                } else if (attempts < 15) {
+                    console.log(`Waiting for WebSocket connection (attempt ${attempts}/15)...`);
+                    setTimeout(checkConnection, 500);
                 } else {
-                    console.error('Echo connector failed to initialize after 10 attempts');
+                    console.error('Echo WebSocket connection failed after 15 attempts');
+                    console.log('Final connection state:', echo?.connector?.pusher?.connection?.state);
                     resolve(false);
                 }
             };
-            checkConnector();
+            
+            // Start checking after a brief delay to allow initialization
+            setTimeout(checkConnection, 100);
         });
         
     } catch (error) {
