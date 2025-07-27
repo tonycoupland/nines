@@ -102,9 +102,9 @@ async function initializeEcho() {
     }
     
     try {
-        // Use direct configuration to avoid async issues
+        // Use Laravel Reverb configuration
         echo = new window.Echo({
-            broadcaster: 'pusher',
+            broadcaster: 'reverb',
             key: 'local-key',
             wsHost: window.location.hostname,
             wsPort: 8081,
@@ -113,7 +113,7 @@ async function initializeEcho() {
             enabledTransports: ['ws', 'wss']
         });
         
-        console.log('Echo initialized successfully');
+        console.log('Echo initialized successfully with Reverb');
         echoInitialized = true;
         
         // Wait a moment for initialization
@@ -518,6 +518,7 @@ async function subscribeToGameUpdates(gameCode) {
     }
     
     try {
+        console.log('Creating channel for:', `game.${gameCode}`);
         const channel = echo.channel(`game.${gameCode}`);
         
         channel.listen('GameUpdated', (e) => {
