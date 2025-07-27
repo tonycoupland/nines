@@ -525,61 +525,75 @@ async function sendMove(gridIndex, cellIndex) {
 }
 
 async function subscribeToGameUpdates(gameCode) {
-    console.log(`WebSocket temporarily disabled for debugging. Game code: ${gameCode}`);
+    console.log(`Attempting to subscribe to game channel: game.${gameCode}`);
     
-    // For now, disable websocket subscription to focus on core game functionality
-    // We'll implement polling as a fallback until Echo is properly configured
-    
-    if (!gameState.isOnline) {
-        return; // No need for updates in local games
+    // Ensure Echo is initialized
+    const isReady = await initializeEcho();
+    if (!isReady || !echo) {
+        console.error('Echo not ready for subscription');
+        return;
     }
     
-    // Set up polling for game updates every 2 seconds
-    if (gameState.pollInterval) {
-        clearInterval(gameState.pollInterval);
-    }
-    
-    gameState.pollInterval = setInterval(async () => {
-        try {
-            const response = await fetch(`/api/games/${gameCode}`);
-            const data = await response.json();
+    try {
+        console.log('Echo object before channel creation:', echo);
+        console.log('Echo connector:', echo?.connector);
+        console.log('Creating channel for:', `game.${gameCode}`);
+        
+        const channel = echo.channel(`game.${gameCode}`);
+        console.log('Channel created successfully:', channel);
+        
+        channel.listen('GameUpdated', (e) => {
+            console.log('Game update received:', e);
             
-            if (data.success && data.game && data.game.game_state) {
-                const serverState = data.game.game_state;
+            if (e.type === 'move_made') {
+                // Preserve critical player info when merging game state
+                const mySymbol = gameState.mySymbol;
+                const playerId = gameState.playerId;
+                const isOnline = gameState.isOnline;
+                const gameCode = gameState.gameCode;
                 
-                // Check if there's been a move since last update
-                const lastMoveCount = gameState.moveCount || 0;
-                const serverMoveCount = serverState.moveCount || 0;
+                gameState = { ...gameState, ...e.gameState };
                 
-                if (serverMoveCount > lastMoveCount) {
-                    // Preserve critical player info when merging game state
-                    const mySymbol = gameState.mySymbol;
-                    const playerId = gameState.playerId;
-                    const isOnline = gameState.isOnline;
-                    const gameCode = gameState.gameCode;
-                    
-                    gameState = { ...gameState, ...serverState };
-                    
-                    // Restore preserved values
-                    gameState.mySymbol = mySymbol;
-                    gameState.playerId = playerId;
-                    gameState.isOnline = isOnline;
-                    gameState.gameCode = gameCode;
-                    
-                    console.log('🔧 Merged game state (polling), preserved mySymbol:', gameState.mySymbol);
-                    updateDisplay();
-                    
-                    if (serverMoveCount > lastMoveCount) {
-                        showMessage('Opponent made a move', 'info');
-                    }
-                }
+                // Restore preserved values
+                gameState.mySymbol = mySymbol;
+                gameState.playerId = playerId;
+                gameState.isOnline = isOnline;
+                gameState.gameCode = gameCode;
+                
+                console.log('🔧 Merged game state (websocket), preserved mySymbol:', gameState.mySymbol);
+                updateDisplay();
+                showMessage(`${e.data.player_id === playerId ? 'You' : 'Opponent'} made a move`, 'info');
+            } else if (e.type === 'player_joined') {
+                showMessage('Opponent joined the game!', 'success');
+                
+                // Preserve critical player info
+                const mySymbol = gameState.mySymbol;
+                const playerId = gameState.playerId;
+                const isOnline = gameState.isOnline;
+                const gameCode = gameState.gameCode;
+                
+                gameState = { ...gameState, ...e.gameState };
+                
+                // Restore preserved values
+                gameState.mySymbol = mySymbol;
+                gameState.playerId = playerId;
+                gameState.isOnline = isOnline;
+                gameState.gameCode = gameCode;
+                
+                console.log('🔧 Merged game state (player joined), preserved mySymbol:', gameState.mySymbol);
+                updateDisplay();
+            } else if (e.type === 'player_resigned') {
+                showMessage(`Player ${e.data.resigning_player} resigned. Player ${e.data.winner} wins!`, 'info');
+                endGame(e.data.winner);
             }
-        } catch (error) {
-            console.error('Error polling for game updates:', error);
-        }
-    }, 2000);
-    
-    console.log('Started polling for game updates every 2 seconds');
+        });
+        
+        console.log('Successfully subscribed to channel');
+        
+    } catch (error) {
+        console.error('Error subscribing to game updates:', error);
+        console.log('Echo object:', echo);
+    }
 }
 
 function endGame(winner, resigned = false) {
