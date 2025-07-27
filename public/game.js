@@ -115,7 +115,7 @@ async function initializeEcho() {
         window.Pusher = window.Pusher;
         
         // Use dynamic configuration from server
-        echo = new window.Echo({
+        window.echo = new window.Echo({
             broadcaster: config.broadcaster || 'reverb',
             key: config.key || 'local-key',
             wsHost: config.host || window.location.hostname,
@@ -125,6 +125,9 @@ async function initializeEcho() {
             enabledTransports: ['ws', 'wss'],
             pusher: window.Pusher
         });
+        
+        // Also assign to local variable for compatibility
+        echo = window.echo;
         
         console.log('Echo initialized successfully with Reverb');
         console.log('Echo connector after init:', echo.connector);
