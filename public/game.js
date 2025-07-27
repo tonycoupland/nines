@@ -518,8 +518,12 @@ async function subscribeToGameUpdates(gameCode) {
     }
     
     try {
+        console.log('Echo object before channel creation:', echo);
+        console.log('Echo connector:', echo?.connector);
         console.log('Creating channel for:', `game.${gameCode}`);
+        
         const channel = echo.channel(`game.${gameCode}`);
+        console.log('Channel created successfully:', channel);
         
         channel.listen('GameUpdated', (e) => {
             console.log('Game update received:', e);
