@@ -18,6 +18,22 @@ Route::get('/config', function () {
     ]);
 });
 
+Route::get('/echo-config', function () {
+    // Detect if we're in production based on APP_ENV or domain
+    $isProduction = env('APP_ENV') === 'production' || 
+                   request()->getHost() !== 'localhost';
+    
+    return response()->json([
+        'broadcaster' => 'reverb',
+        'key' => env('VITE_REVERB_APP_KEY', 'local-key'),
+        'host' => $isProduction ? request()->getHost() : env('VITE_REVERB_HOST', 'localhost'),
+        'port' => $isProduction ? 443 : env('VITE_REVERB_PORT', 8081),
+        'wss_port' => $isProduction ? 443 : env('VITE_REVERB_PORT', 8081),
+        'encrypted' => $isProduction,
+        'scheme' => $isProduction ? 'https' : env('VITE_REVERB_SCHEME', 'http')
+    ]);
+});
+
 Route::post('/games', [GameController::class, 'createGame']);
 Route::post('/games/{code}/join', [GameController::class, 'joinGame']);
 Route::get('/games/{code}', [GameController::class, 'getGame']);

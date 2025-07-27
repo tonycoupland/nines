@@ -104,17 +104,24 @@ async function initializeEcho() {
     }
     
     try {
+        // Fetch WebSocket configuration from server
+        console.log('Fetching WebSocket configuration from server...');
+        const configResponse = await fetch('/api/echo-config');
+        const config = await configResponse.json();
+        
+        console.log('Server WebSocket config:', config);
+        
         // Configure Pusher for Laravel Echo
         window.Pusher = window.Pusher;
         
-        // Use Laravel Reverb configuration with proper Pusher setup
+        // Use dynamic configuration from server
         echo = new window.Echo({
-            broadcaster: 'reverb',
-            key: 'local-key',
-            wsHost: window.location.hostname,
-            wsPort: 8081,
-            wssPort: 8081,
-            forceTLS: false,
+            broadcaster: config.broadcaster || 'reverb',
+            key: config.key || 'local-key',
+            wsHost: config.host || window.location.hostname,
+            wsPort: config.port || 8081,
+            wssPort: config.wss_port || 8081,
+            forceTLS: config.encrypted || false,
             enabledTransports: ['ws', 'wss'],
             pusher: window.Pusher
         });
