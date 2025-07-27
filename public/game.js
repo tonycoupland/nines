@@ -115,7 +115,7 @@ async function initializeEcho() {
         window.Pusher = window.Pusher;
         
         // Use dynamic configuration from server
-        window.echo = new window.Echo({
+        window.echo = new Echo({
             broadcaster: config.broadcaster || 'reverb',
             key: config.key || 'local-key',
             wsHost: config.host || window.location.hostname,
