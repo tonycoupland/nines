@@ -560,6 +560,7 @@ async function subscribeToGameUpdates(gameCode) {
     }
     
     try {
+        var echo = window.Echo.echo;
         console.log('Echo object before channel creation:', echo);
         console.log('Echo connector:', echo?.connector);
         console.log('Creating channel for:', `game.${gameCode}`);
