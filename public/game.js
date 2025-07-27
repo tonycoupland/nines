@@ -107,6 +107,7 @@ async function initializeEcho() {
             wssPort: reverbConfig.scheme === 'https' ? 443 : reverbConfig.port,
             forceTLS: reverbConfig.scheme === 'https',
             enabledTransports: ['ws', 'wss'],
+            pusher: window.Pusher
         });
         
         console.log('Echo initialized with config:', reverbConfig);
@@ -153,6 +154,7 @@ async function initializeEcho() {
             wssPort: 8081,
             forceTLS: false,
             enabledTransports: ['ws', 'wss'],
+            pusher: window.Pusher
         });
     }
 }
@@ -535,25 +537,68 @@ async function sendMove(gridIndex, cellIndex) {
 }
 
 function subscribeToGameUpdates(gameCode) {
-    if (!echo) return;
+    if (!echo) {
+        console.warn('Echo not initialized, cannot subscribe to game updates');
+        return;
+    }
     
-    echo.channel(`game.${gameCode}`)
-        .listen('GameUpdated', (e) => {
-            console.log('Game update received:', e);
+    // Wait for Echo to fully initialize
+    setTimeout(() => {
+        try {
+            console.log(`Subscribing to game channel: game.${gameCode}`);
             
-            if (e.type === 'move_made') {
-                gameState = { ...gameState, ...e.gameState };
-                updateDisplay();
-                showMessage(`${e.data.player_id === playerId ? 'You' : 'Opponent'} made a move`, 'info');
-            } else if (e.type === 'player_joined') {
-                showMessage('Opponent joined the game!', 'success');
-                gameState = { ...gameState, ...e.gameState };
-                updateDisplay();
-            } else if (e.type === 'player_resigned') {
-                showMessage(`Player ${e.data.resigning_player} resigned. Player ${e.data.winner} wins!`, 'info');
-                endGame(e.data.winner);
-            }
-        });
+            echo.channel(`game.${gameCode}`)
+                .listen('GameUpdated', (e) => {
+                    console.log('Game update received:', e);
+                    
+                    if (e.type === 'move_made') {
+                        // Preserve critical player info when merging game state
+                        const mySymbol = gameState.mySymbol;
+                        const playerId = gameState.playerId;
+                        const isOnline = gameState.isOnline;
+                        const gameCode = gameState.gameCode;
+                        
+                        gameState = { ...gameState, ...e.gameState };
+                        
+                        // Restore preserved values
+                        gameState.mySymbol = mySymbol;
+                        gameState.playerId = playerId;
+                        gameState.isOnline = isOnline;
+                        gameState.gameCode = gameCode;
+                        
+                        console.log('🔧 Merged game state (websocket), preserved mySymbol:', gameState.mySymbol);
+                        updateDisplay();
+                        showMessage(`${e.data.player_id === playerId ? 'You' : 'Opponent'} made a move`, 'info');
+                    } else if (e.type === 'player_joined') {
+                        showMessage('Opponent joined the game!', 'success');
+                        
+                        // Preserve critical player info
+                        const mySymbol = gameState.mySymbol;
+                        const playerId = gameState.playerId;
+                        const isOnline = gameState.isOnline;
+                        const gameCode = gameState.gameCode;
+                        
+                        gameState = { ...gameState, ...e.gameState };
+                        
+                        // Restore preserved values
+                        gameState.mySymbol = mySymbol;
+                        gameState.playerId = playerId;
+                        gameState.isOnline = isOnline;
+                        gameState.gameCode = gameCode;
+                        
+                        console.log('🔧 Merged game state (player joined), preserved mySymbol:', gameState.mySymbol);
+                        updateDisplay();
+                    } else if (e.type === 'player_resigned') {
+                        showMessage(`Player ${e.data.resigning_player} resigned. Player ${e.data.winner} wins!`, 'info');
+                        endGame(e.data.winner);
+                    }
+                });
+        } catch (error) {
+            console.error('Error subscribing to game updates:', error);
+            console.log('Echo object:', echo);
+            console.log('Echo connector:', echo?.connector);
+        }
+    }, 1000);
 }
 
 function endGame(winner, resigned = false) {
