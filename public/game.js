@@ -102,7 +102,10 @@ async function initializeEcho() {
     }
     
     try {
-        // Use Laravel Reverb configuration
+        // Configure Pusher for Laravel Echo
+        window.Pusher = window.Pusher;
+        
+        // Use Laravel Reverb configuration with proper Pusher setup
         echo = new window.Echo({
             broadcaster: 'reverb',
             key: 'local-key',
@@ -110,18 +113,30 @@ async function initializeEcho() {
             wsPort: 8081,
             wssPort: 8081,
             forceTLS: false,
-            enabledTransports: ['ws', 'wss']
+            enabledTransports: ['ws', 'wss'],
+            pusher: window.Pusher
         });
         
         console.log('Echo initialized successfully with Reverb');
         echoInitialized = true;
         
-        // Wait a moment for initialization
+        // Wait for Echo connector to initialize
         return new Promise((resolve) => {
-            setTimeout(() => {
-                console.log('Echo ready for channel subscription');
-                resolve(true);
-            }, 500);
+            let attempts = 0;
+            const checkConnector = () => {
+                attempts++;
+                if (echo.connector) {
+                    console.log('Echo ready for channel subscription');
+                    resolve(true);
+                } else if (attempts < 10) {
+                    console.log(`Waiting for Echo connector (attempt ${attempts}/10)...`);
+                    setTimeout(checkConnector, 200);
+                } else {
+                    console.error('Echo connector failed to initialize after 10 attempts');
+                    resolve(false);
+                }
+            };
+            checkConnector();
         });
         
     } catch (error) {
