@@ -1,8 +1,9 @@
 // Enhanced Nines Game with URL routing, player persistence, resign, and stats
 
-// WebSocket connection for real-time updates
-let ws = null;
-let wsConnected = false;
+// Initialize Laravel Echo for websockets (using global variables from CDN)
+window.Pusher = window.Pusher;
+let echo = null;
+let echoInitialized = false;
 
 // Player management and persistence
 let playerId = null;
@@ -86,54 +87,47 @@ function checkUrlForGame() {
     return null;
 }
 
-// Initialize WebSocket connection
-function initializeWebSocket() {
-    if (ws && ws.readyState === WebSocket.OPEN) {
-        return Promise.resolve(true);
+// Initialize Echo with config from server
+async function initializeEcho() {
+    if (echoInitialized) return true;
+    
+    if (!window.Pusher) {
+        console.error('Pusher not available');
+        return false;
     }
     
-    return new Promise((resolve, reject) => {
-        try {
-            const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-            const wsUrl = `${protocol}//${window.location.hostname}:8081/app/local-key?protocol=7&client=js&version=8.0.1&flash=false`;
-            
-            console.log('Connecting to WebSocket:', wsUrl);
-            ws = new WebSocket(wsUrl);
-            
-            ws.onopen = () => {
-                console.log('WebSocket connected successfully');
-                wsConnected = true;
-                updateConnectionStatus(true);
+    if (!window.Echo) {
+        console.error('Laravel Echo not available');
+        return false;
+    }
+    
+    try {
+        // Use Laravel Reverb configuration
+        echo = new window.Echo({
+            broadcaster: 'reverb',
+            key: 'local-key',
+            wsHost: window.location.hostname,
+            wsPort: 8081,
+            wssPort: 8081,
+            forceTLS: false,
+            enabledTransports: ['ws', 'wss']
+        });
+        
+        console.log('Echo initialized successfully with Reverb');
+        echoInitialized = true;
+        
+        // Wait a moment for initialization
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                console.log('Echo ready for channel subscription');
                 resolve(true);
-            };
-            
-            ws.onclose = () => {
-                console.log('WebSocket connection closed');
-                wsConnected = false;
-                updateConnectionStatus(false);
-            };
-            
-            ws.onerror = (error) => {
-                console.error('WebSocket error:', error);
-                wsConnected = false;
-                updateConnectionStatus(false);
-                reject(error);
-            };
-            
-            ws.onmessage = (event) => {
-                try {
-                    const data = JSON.parse(event.data);
-                    handleWebSocketMessage(data);
-                } catch (error) {
-                    console.error('Error parsing WebSocket message:', error);
-                }
-            };
-            
-        } catch (error) {
-            console.error('Failed to initialize WebSocket:', error);
-            reject(error);
-        }
-    });
+            }, 500);
+        });
+        
+    } catch (error) {
+        console.error('Failed to initialize Echo:', error);
+        return false;
+    }
 }
 
 // Connection status management
@@ -513,82 +507,71 @@ async function sendMove(gridIndex, cellIndex) {
     }
 }
 
-// Handle WebSocket messages
-function handleWebSocketMessage(data) {
-    console.log('WebSocket message received:', data);
-    
-    if (data.event === 'GameUpdated') {
-        const eventData = JSON.parse(data.data);
-        console.log('Game update received:', eventData);
-        
-        if (eventData.type === 'move_made') {
-            // Preserve critical player info when merging game state
-            const mySymbol = gameState.mySymbol;
-            const playerId = gameState.playerId;
-            const isOnline = gameState.isOnline;
-            const gameCode = gameState.gameCode;
-            
-            gameState = { ...gameState, ...eventData.gameState };
-            
-            // Restore preserved values
-            gameState.mySymbol = mySymbol;
-            gameState.playerId = playerId;
-            gameState.isOnline = isOnline;
-            gameState.gameCode = gameCode;
-            
-            console.log('🔧 Merged game state (websocket), preserved mySymbol:', gameState.mySymbol);
-            updateDisplay();
-            showMessage(`${eventData.data.player_id === playerId ? 'You' : 'Opponent'} made a move`, 'info');
-        } else if (eventData.type === 'player_joined') {
-            showMessage('Opponent joined the game!', 'success');
-            
-            // Preserve critical player info
-            const mySymbol = gameState.mySymbol;
-            const playerId = gameState.playerId;
-            const isOnline = gameState.isOnline;
-            const gameCode = gameState.gameCode;
-            
-            gameState = { ...gameState, ...eventData.gameState };
-            
-            // Restore preserved values
-            gameState.mySymbol = mySymbol;
-            gameState.playerId = playerId;
-            gameState.isOnline = isOnline;
-            gameState.gameCode = gameCode;
-            
-            console.log('🔧 Merged game state (player joined), preserved mySymbol:', gameState.mySymbol);
-            updateDisplay();
-        } else if (eventData.type === 'player_resigned') {
-            showMessage(`Player ${eventData.data.resigning_player} resigned. Player ${eventData.data.winner} wins!`, 'info');
-            endGame(eventData.data.winner);
-        }
-    }
-}
-
-// Subscribe to game updates
 async function subscribeToGameUpdates(gameCode) {
-    console.log(`Subscribing to game channel: game.${gameCode}`);
+    console.log(`Attempting to subscribe to game channel: game.${gameCode}`);
+    
+    // Ensure Echo is initialized
+    const isReady = await initializeEcho();
+    if (!isReady || !echo) {
+        console.error('Echo not ready for subscription');
+        return;
+    }
     
     try {
-        const connected = await initializeWebSocket();
-        if (!connected) {
-            console.error('WebSocket not connected');
-            return;
-        }
+        console.log('Creating channel for:', `game.${gameCode}`);
+        const channel = echo.channel(`game.${gameCode}`);
         
-        // Subscribe to the game channel
-        const subscribeMessage = {
-            event: 'pusher:subscribe',
-            data: {
-                channel: `game.${gameCode}`
+        channel.listen('GameUpdated', (e) => {
+            console.log('Game update received:', e);
+            
+            if (e.type === 'move_made') {
+                // Preserve critical player info when merging game state
+                const mySymbol = gameState.mySymbol;
+                const playerId = gameState.playerId;
+                const isOnline = gameState.isOnline;
+                const gameCode = gameState.gameCode;
+                
+                gameState = { ...gameState, ...e.gameState };
+                
+                // Restore preserved values
+                gameState.mySymbol = mySymbol;
+                gameState.playerId = playerId;
+                gameState.isOnline = isOnline;
+                gameState.gameCode = gameCode;
+                
+                console.log('🔧 Merged game state (websocket), preserved mySymbol:', gameState.mySymbol);
+                updateDisplay();
+                showMessage(`${e.data.player_id === playerId ? 'You' : 'Opponent'} made a move`, 'info');
+            } else if (e.type === 'player_joined') {
+                showMessage('Opponent joined the game!', 'success');
+                
+                // Preserve critical player info
+                const mySymbol = gameState.mySymbol;
+                const playerId = gameState.playerId;
+                const isOnline = gameState.isOnline;
+                const gameCode = gameState.gameCode;
+                
+                gameState = { ...gameState, ...e.gameState };
+                
+                // Restore preserved values
+                gameState.mySymbol = mySymbol;
+                gameState.playerId = playerId;
+                gameState.isOnline = isOnline;
+                gameState.gameCode = gameCode;
+                
+                console.log('🔧 Merged game state (player joined), preserved mySymbol:', gameState.mySymbol);
+                updateDisplay();
+            } else if (e.type === 'player_resigned') {
+                showMessage(`Player ${e.data.resigning_player} resigned. Player ${e.data.winner} wins!`, 'info');
+                endGame(e.data.winner);
             }
-        };
+        });
         
-        ws.send(JSON.stringify(subscribeMessage));
-        console.log('Subscription message sent for channel:', `game.${gameCode}`);
+        console.log('Successfully subscribed to channel');
         
     } catch (error) {
         console.error('Error subscribing to game updates:', error);
+        console.log('Echo object:', echo);
     }
 }
 
@@ -947,6 +930,7 @@ function showMessage(message, type) {
 
 // Initialize the application
 async function initializeApp() {
+    await initializeEcho();
     initializePlayer();
     await loadPlayerStats();
     
