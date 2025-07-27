@@ -1,9 +1,7 @@
 // Enhanced Nines Game with URL routing, player persistence, resign, and stats
-import Echo from 'laravel-echo';
-import Pusher from 'pusher-js';
 
-// Initialize Laravel Echo for websockets
-window.Pusher = Pusher;
+// Initialize Laravel Echo for websockets (using global variables from CDN)
+window.Pusher = window.Pusher;
 let echo = null;
 
 // Player management and persistence
@@ -95,7 +93,7 @@ async function initializeEcho() {
         const config = await response.json();
         const reverbConfig = config.reverb;
         
-        echo = new Echo({
+        echo = new window.Echo({
             broadcaster: 'reverb',
             key: reverbConfig.key,
             wsHost: reverbConfig.host,
@@ -131,7 +129,7 @@ async function initializeEcho() {
     } catch (error) {
         console.error('Failed to load config, using defaults:', error);
         
-        echo = new Echo({
+        echo = new window.Echo({
             broadcaster: 'reverb',
             key: 'local-key',
             wsHost: window.location.hostname,
