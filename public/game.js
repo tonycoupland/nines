@@ -111,23 +111,19 @@ async function initializeEcho() {
         
         console.log('Server WebSocket config:', config);
         
-        // Configure Pusher for Laravel Echo
-        window.Pusher = window.Pusher;
-        
         // Use dynamic configuration from server
-        window.echo = new Echo({
+        window.Echo = new Echo({
             broadcaster: config.broadcaster || 'reverb',
             key: config.key || 'local-key',
             wsHost: config.host || window.location.hostname,
             wsPort: config.port || 8081,
             wssPort: config.wss_port || 8081,
             forceTLS: config.encrypted || false,
-            enabledTransports: ['ws', 'wss'],
-            pusher: window.Pusher
+            enabledTransports: ['ws', 'wss']
         });
         
         // Also assign to local variable for compatibility
-        echo = window.echo;
+        echo = window.Echo;
         
         console.log('Echo initialized successfully with Reverb');
         console.log('Echo connector after init:', echo.connector);
