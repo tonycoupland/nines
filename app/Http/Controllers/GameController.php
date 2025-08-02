@@ -225,9 +225,13 @@ class GameController extends Controller
         $winnerSymbol = $resigningPlayerSymbol === 'X' ? 'O' : 'X';
 
         // Update game state and move count
+        $gameState = $game->game_state;
+        $gameState['game_over'] = true;
+        $gameState['winner'] = $winnerSymbol;
+
         $game->update([
-            'game_state' => 'finished',
-            'winner' => $winnerSymbol
+            'status' => 'finished',
+            'game_state' => $gameState
         ]);
 
         // End game due to resignation
