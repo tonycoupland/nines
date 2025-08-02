@@ -1013,7 +1013,7 @@ function updateDisplay() {
         "current-player-display",
     );
     if (gameState.gameWon) {
-        currentPlayerDisplay.textContent = `🎉 Player ${gameState.winner} wins!`;
+        currentPlayerDisplay.textContent = `${(gameState.winner == mySymbol) ? "🎉 You" : "🥲 Opponent"} won!`;
     } else if (gameState.isOnline) {
         const isMyTurn = gameState.currentPlayer === mySymbol;
         // Debug logging to help identify issues
