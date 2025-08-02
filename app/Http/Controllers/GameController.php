@@ -131,7 +131,7 @@ class GameController extends Controller
         $player = Player::findOrCreateByPlayerId($playerId);
         
         // If there are not two players already, and we are not player one, start the join process
-        if ((string)$game->player1_id !== (string)$player->id && isnull($game->player2_id)){
+        if ((string)$game->player1_id !== (string)$player->id && is_null($game->player2_id)){
             return joinGame($request, $code);
         }
         
