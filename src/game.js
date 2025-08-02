@@ -647,7 +647,7 @@ async function subscribeToGameUpdates(gameCode) {
                 const isOnline = gameState.isOnline;
                 const gameCode = gameState.gameCode;
 
-                gameState = { ...gameState, ...e.gameState };
+                gameState = { ...gameState, ...e.game_state };
 
                 // Restore preserved values
                 gameState.mySymbol = mySymbol;
