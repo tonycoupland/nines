@@ -35,11 +35,6 @@ class GameUpdated implements ShouldBroadcastNow
         ];
     }
 
-    public function broadcastAs(): string
-    {
-        return 'game-updated';
-    }
-
     public function broadcastWith(): array
     {
         return [
