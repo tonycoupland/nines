@@ -199,17 +199,6 @@ async function initializeEcho() {
     }
 }
 
-// Connection status management
-function updateConnectionStatus(isConnected) {
-    const statusElement = document.getElementById("connection-status");
-    if (statusElement) {
-        statusElement.textContent = isConnected ? "Connected" : "Disconnected";
-        statusElement.className = isConnected
-            ? "status-success"
-            : "status-error";
-    }
-}
-
 // Stats management
 async function loadPlayerStats() {
     try {
@@ -634,23 +623,11 @@ async function subscribeToGameUpdates(gameCode) {
             console.log("Game update received:", e);
 
             if (e.event_type === "move_made") {
-                // Preserve critical player info when merging game state
-                // const playerId = gameState.playerId;
-                // const isOnline = gameState.isOnline;
-                // const gameCode = gameState.gameCode;
 
                 gameState = { ...gameState, ...e.game_state };
-
-                // Restore preserved values
-                // gameState.playerId = playerId;
-                // gameState.isOnline = isOnline;
-                // gameState.gameCode = gameCode;
-
                 updateDisplay();
-                showMessage(
-                    `${e.event_data.player_id === playerId ? "You" : "Opponent"} made a move`,
-                    "info",
-                );
+                console.log(`${e.event_data.player_id === playerId ? "You" : "Opponent"} made a move`);
+
             } else if (e.event_type === "player_joined") {
                 showMessage("Opponent joined the game!", "success");
 
@@ -756,16 +733,6 @@ function showGameScreen() {
         );
     } else {
         console.error("game-info element not found!");
-    }
-
-    // Show/hide connection status based on game type
-    const connectionStatus = document.getElementById("connection-status");
-    if (connectionStatus) {
-        if (gameState.isOnline) {
-            connectionStatus.style.display = "block";
-        } else {
-            connectionStatus.style.display = "none";
-        }
     }
 
     // Show resign button for online games
@@ -903,12 +870,6 @@ function startLocalGame() {
 
     showGameScreen();
     document.getElementById("game-code-display").textContent = "Local Game";
-
-    // Hide connection status for local games
-    const connectionStatus = document.getElementById("connection-status");
-    if (connectionStatus) {
-        connectionStatus.style.display = "none";
-    }
 }
 
 function newGame() {
