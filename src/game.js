@@ -642,18 +642,18 @@ async function subscribeToGameUpdates(gameCode) {
 
             if (e.event_type === "move_made") {
                 // Preserve critical player info when merging game state
-                const mySymbol = gameState.mySymbol;
-                const playerId = gameState.playerId;
-                const isOnline = gameState.isOnline;
-                const gameCode = gameState.gameCode;
+                // const mySymbol = gameState.mySymbol;
+                // const playerId = gameState.playerId;
+                // const isOnline = gameState.isOnline;
+                // const gameCode = gameState.gameCode;
 
                 gameState = { ...gameState, ...e.game_state };
 
                 // Restore preserved values
-                gameState.mySymbol = mySymbol;
-                gameState.playerId = playerId;
-                gameState.isOnline = isOnline;
-                gameState.gameCode = gameCode;
+                // gameState.mySymbol = mySymbol;
+                // gameState.playerId = playerId;
+                // gameState.isOnline = isOnline;
+                // gameState.gameCode = gameCode;
 
                 console.log(
                     "🔧 Merged game state (websocket), preserved mySymbol:",
