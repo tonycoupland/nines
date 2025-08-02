@@ -688,9 +688,10 @@ function endGame(winner, resigned = false) {
 
 
 function backToMenu() {
-    if (gameState.gameCode && !gameState.gameWon) {
-        if (confirm("This will end the current online game. Are you sure?")) {
-            resignGame();
+    if (gameState.isOnline && gameState.gameCode && !gameState.gameWon) {
+        resignGame();
+        // If we actually resigned, go to menu
+        if (gameState.gameWon){
             showMenu();
         }
     }
