@@ -685,6 +685,20 @@ function endGame(winner, resigned = false) {
 }
 
 // UI Management
+
+
+function backToMenu() {
+    if (gameState.gameCode && !gameState.gameWon) {
+        if (confirm("This will end the current online game. Are you sure?")) {
+            resignGame();
+            showMenu();
+        }
+    }
+    else{
+        showMenu();
+    }
+}
+
 function showMenu() {
     document.getElementById("menu-screen").style.display = "block";
     document.getElementById("join-screen").style.display = "none";
@@ -870,19 +884,6 @@ function startLocalGame() {
 
     showGameScreen();
     document.getElementById("game-code-display").textContent = "Local Game";
-}
-
-function newGame() {
-    if (gameState.isOnline) {
-        if (confirm("This will end the current online game. Are you sure?")) {
-            if (gameState.gameCode && !gameState.gameWon) {
-                resignGame();
-            }
-            showMenu();
-        }
-    } else {
-        startLocalGame();
-    }
 }
 
 function generateBoard() {
@@ -1087,7 +1088,7 @@ window.showJoinGame = showJoinGame;
 window.showStatsScreen = showStatsScreen;
 window.showMenu = showMenu;
 window.joinGame = joinGame;
-window.newGame = newGame;
+window.backToMenu = backToMenu;
 window.resignGame = resignGame;
 
 // Initialize when DOM is loaded
