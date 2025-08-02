@@ -7,6 +7,7 @@ let echoInitialized = false;
 
 // Player management and persistence
 let playerId = null;
+let mySymbol = "X";
 let playerStats = {
     games_played: 0,
     games_won: 0,
@@ -319,7 +320,7 @@ function canMakeMove(gridIndex, cellIndex) {
     if (gameState.activeGrid !== null && gameState.activeGrid !== gridIndex)
         return false;
 
-    if (gameState.isOnline && gameState.currentPlayer !== gameState.mySymbol)
+    if (gameState.isOnline && gameState.currentPlayer !== mySymbol)
         return false;
 
     return true;
@@ -374,7 +375,6 @@ async function createOnlineGame() {
             winner: null,
             gridWinners: Array(9).fill(null),
             isOnline: true,
-            mySymbol: "X",
             gameCode: null,
             gameStartTime: Date.now(),
         };
@@ -393,10 +393,10 @@ async function createOnlineGame() {
 
         if (data.success) {
             gameState.gameCode = data.game.code;
-            gameState.mySymbol = data.game.player_symbol;
+            mySymbol = "X"; // Game creator is always X
 
             // Debug logging for symbol assignment
-            console.log("🎮 CREATED GAME - Your symbol:", gameState.mySymbol);
+            console.log("🎮 CREATED GAME - Your symbol:", mySymbol);
             console.log("🎮 Current player:", gameState.currentPlayer);
 
             updateGameUrl(gameState.gameCode);
@@ -405,7 +405,7 @@ async function createOnlineGame() {
             document.getElementById("game-code-display").textContent =
                 `Game Code: ${gameState.gameCode}`;
             showMessage(
-                `Game created! You are player ${gameState.mySymbol}. Share this code with your opponent.`,
+                `Game created! You are player ${mySymbol}. Share this code with your opponent.`,
                 "success",
             );
 
@@ -452,15 +452,14 @@ async function joinOnlineGame(code) {
 
         if (data.success) {
             gameState.gameCode = data.game.code;
-            gameState.mySymbol = "O"; // When you join a game, you are always player O
+            mySymbol = "O"; // When you join a game, you are always player O
 
             // Debug logging for symbol assignment
-            console.log("🎮 JOINED GAME - Your symbol:", gameState.mySymbol);
+            console.log("🎮 JOINED GAME - Your symbol:", mySymbol);
             console.log("🎮 Current player:", gameState.currentPlayer);
 
             if (data.game.game_state) {
                 // Preserve critical player info when merging game state
-                const mySymbol = gameState.mySymbol;
                 const playerId = gameState.playerId;
                 const isOnline = gameState.isOnline;
                 const gameCode = gameState.gameCode;
@@ -468,7 +467,6 @@ async function joinOnlineGame(code) {
                 gameState = { ...gameState, ...data.game.game_state };
 
                 // Restore preserved values
-                gameState.mySymbol = mySymbol;
                 gameState.playerId = playerId;
                 gameState.isOnline = isOnline;
                 gameState.gameCode = gameCode;
@@ -480,7 +478,7 @@ async function joinOnlineGame(code) {
             document.getElementById("game-code-display").textContent =
                 `Game Code: ${gameState.gameCode}`;
             showMessage(
-                `${data.message} - You are player ${gameState.mySymbol}`,
+                `${data.message} - You are player ${mySymbol}`,
                 "success",
             );
 
@@ -504,18 +502,19 @@ async function resumeGame(code) {
         const data = await response.json();
 
         if (data.success) {
+            // Get which symbol we are... depending on if we started the game or not
+            mySymbol = data.game.player_symbol;
+
             gameState.isOnline = true;
             gameState.gameCode = data.game.code;
-            gameState.mySymbol = data.game.player_symbol;
             gameState.gameStartTime = Date.now();
 
             // Debug logging for symbol assignment
-            console.log("🎮 RESUMED GAME - Your symbol:", gameState.mySymbol);
+            console.log("🎮 RESUMED GAME - Your symbol:", mySymbol);
             console.log("🎮 Current player:", gameState.currentPlayer);
 
             if (data.game.game_state) {
                 // Preserve critical player info when merging game state
-                const mySymbol = gameState.mySymbol;
                 const playerId = gameState.playerId;
                 const isOnline = gameState.isOnline;
                 const gameCode = gameState.gameCode;
@@ -523,15 +522,9 @@ async function resumeGame(code) {
                 gameState = { ...gameState, ...data.game.game_state };
 
                 // Restore preserved values
-                gameState.mySymbol = mySymbol;
                 gameState.playerId = playerId;
                 gameState.isOnline = isOnline;
                 gameState.gameCode = gameCode;
-
-                console.log(
-                    "🔧 Merged game state (resume), preserved mySymbol:",
-                    gameState.mySymbol,
-                );
             }
 
             subscribeToGameUpdates(gameState.gameCode);
@@ -540,7 +533,7 @@ async function resumeGame(code) {
             document.getElementById("game-code-display").textContent =
                 `Game Code: ${gameState.gameCode}`;
             showMessage(
-                `Game resumed! You are player ${gameState.mySymbol}`,
+                `Game resumed! You are player ${mySymbol}`,
                 "success",
             );
 
@@ -584,7 +577,7 @@ async function resignGame() {
 
             if (data.success) {
                 showMessage("You have resigned from the game", "info");
-                endGame(gameState.mySymbol === "X" ? "O" : "X", true);
+                endGame(mySymbol === "X" ? "O" : "X", true);
             } else {
                 showMessage("Failed to resign: " + data.message, "error");
             }
@@ -642,7 +635,6 @@ async function subscribeToGameUpdates(gameCode) {
 
             if (e.event_type === "move_made") {
                 // Preserve critical player info when merging game state
-                // const mySymbol = gameState.mySymbol;
                 // const playerId = gameState.playerId;
                 // const isOnline = gameState.isOnline;
                 // const gameCode = gameState.gameCode;
@@ -650,15 +642,10 @@ async function subscribeToGameUpdates(gameCode) {
                 gameState = { ...gameState, ...e.game_state };
 
                 // Restore preserved values
-                // gameState.mySymbol = mySymbol;
                 // gameState.playerId = playerId;
                 // gameState.isOnline = isOnline;
                 // gameState.gameCode = gameCode;
 
-                console.log(
-                    "🔧 Merged game state (websocket), preserved mySymbol:",
-                    gameState.mySymbol,
-                );
                 updateDisplay();
                 showMessage(
                     `${e.event_data.player_id === playerId ? "You" : "Opponent"} made a move`,
@@ -668,7 +655,6 @@ async function subscribeToGameUpdates(gameCode) {
                 showMessage("Opponent joined the game!", "success");
 
                 // Preserve critical player info
-                const mySymbol = gameState.mySymbol;
                 const playerId = gameState.playerId;
                 const isOnline = gameState.isOnline;
                 const gameCode = gameState.gameCode;
@@ -676,14 +662,13 @@ async function subscribeToGameUpdates(gameCode) {
                 gameState = { ...gameState, ...e.gameState };
 
                 // Restore preserved values
-                gameState.mySymbol = mySymbol;
                 gameState.playerId = playerId;
                 gameState.isOnline = isOnline;
                 gameState.gameCode = gameCode;
 
                 console.log(
                     "🔧 Merged game state (player joined), preserved mySymbol:",
-                    gameState.mySymbol,
+                    mySymbol,
                 );
                 updateDisplay();
             } else if (e.event_type === "player_resigned") {
@@ -963,7 +948,7 @@ function generateBoard() {
 
             cell.onclick = () => {
                 console.log(
-                    `Clicked cell ${gridIndex}-${cellIndex}, current player: ${gameState.currentPlayer}, my symbol: ${gameState.mySymbol}`,
+                    `Clicked cell ${gridIndex}-${cellIndex}, current player: ${gameState.currentPlayer}, my symbol: ${mySymbol}`,
                 );
                 if (canMakeMove(gridIndex, cellIndex)) {
                     makeMove(gridIndex, cellIndex);
@@ -977,9 +962,9 @@ function generateBoard() {
                         activeGrid: gameState.activeGrid,
                         requiredGrid: gameState.activeGrid,
                         isMyTurn:
-                            gameState.currentPlayer === gameState.mySymbol,
+                            gameState.currentPlayer === mySymbol,
                         currentPlayer: gameState.currentPlayer,
-                        mySymbol: gameState.mySymbol,
+                        mySymbol: mySymbol,
                     });
                 }
             };
@@ -1069,18 +1054,18 @@ function updateDisplay() {
     if (gameState.gameWon) {
         currentPlayerDisplay.textContent = `🎉 Player ${gameState.winner} wins!`;
     } else if (gameState.isOnline) {
-        const isMyTurn = gameState.currentPlayer === gameState.mySymbol;
+        const isMyTurn = gameState.currentPlayer === mySymbol;
         // Debug logging to help identify issues
         console.log(
             "🔄 Display update - My symbol:",
-            gameState.mySymbol,
+            mySymbol,
             "Current player:",
             gameState.currentPlayer,
             "Is my turn:",
             isMyTurn,
         );
         currentPlayerDisplay.textContent = isMyTurn
-            ? `Your turn (${gameState.mySymbol})`
+            ? `Your turn (${mySymbol})`
             : `Opponent's turn (${gameState.currentPlayer})`;
     } else {
         currentPlayerDisplay.textContent = `Player ${gameState.currentPlayer}'s turn`;
