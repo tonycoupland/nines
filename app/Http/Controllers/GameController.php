@@ -223,7 +223,13 @@ class GameController extends Controller
         // Determine winner (opponent) with type casting
         $resigningPlayerSymbol = (string)$game->player1_id === (string)$player->id ? 'X' : 'O';
         $winnerSymbol = $resigningPlayerSymbol === 'X' ? 'O' : 'X';
-        
+
+        // Update game state and move count
+        $game->update([
+            'game_state' => 'finished',
+            'winner' => $winnerSymbol
+        ]);
+
         // End game due to resignation
         $this->endGame($game, $winnerSymbol, 'resign');
         
