@@ -452,7 +452,7 @@ async function joinOnlineGame(code) {
 
         if (data.success) {
             gameState.gameCode = data.game.code;
-            gameState.mySymbol = data.game.player_symbol;
+            gameState.mySymbol = "O"; // When you join a game, you are always player O
 
             // Debug logging for symbol assignment
             console.log("🎮 JOINED GAME - Your symbol:", gameState.mySymbol);
@@ -472,11 +472,6 @@ async function joinOnlineGame(code) {
                 gameState.playerId = playerId;
                 gameState.isOnline = isOnline;
                 gameState.gameCode = gameCode;
-
-                console.log(
-                    "🔧 Merged game state (join), preserved mySymbol:",
-                    gameState.mySymbol,
-                );
             }
 
             updateGameUrl(gameState.gameCode);
