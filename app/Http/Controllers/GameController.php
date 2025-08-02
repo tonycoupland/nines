@@ -132,7 +132,7 @@ class GameController extends Controller
         
         // If there are not two players already, and we are not player one, start the join process
         if ((string)$game->player1_id !== (string)$player->id && is_null($game->player2_id)){
-            return joinGame($request, $code);
+            return $this->joinGame($request, $code);
         }
         
         // Check if player is in this game, and that there are two players
