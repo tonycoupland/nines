@@ -130,9 +130,12 @@ class GameController extends Controller
         // Create or find player record (same as in create/join)
         $player = Player::findOrCreateByPlayerId($playerId);
         
-
+        // If there are not two players already, and we are not player one, start the join process
+        if ((string)$game->player1_id !== (string)$player->id && isnull($game->player2_id)){
+            return joinGame($request, $code);
+        }
         
-        // Check if player is in this game (handle type casting)
+        // Check if player is in this game, and that there are two players
         if ((string)$game->player1_id !== (string)$player->id && (string)$game->player2_id !== (string)$player->id) {
             return response()->json([
                 'success' => false,

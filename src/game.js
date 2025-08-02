@@ -394,7 +394,7 @@ async function createOnlineGame() {
             document.getElementById("game-code-display").textContent =
                 `Game Code: ${gameState.gameCode}`;
             showMessage(
-                `Game created! You are player ${mySymbol}. Share this code with your opponent.`,
+                `Game created! You are player ${mySymbol}. Share code ${gameState.gameCode} with your opponent.`,
                 "success",
             );
 
