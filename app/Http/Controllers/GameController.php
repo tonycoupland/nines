@@ -271,7 +271,7 @@ class GameController extends Controller
     {
         $totalGames = Game::count();
         $activeGames = Game::where('status', 'active')->count();
-        $completedGames = Game::where('status', 'completed')->count();
+        $completedGames = Game::where('status', 'finished')->count();
         $totalPlayers = Player::count();
         
         // Get database driver to use appropriate SQL syntax
@@ -311,7 +311,7 @@ class GameController extends Controller
     {
         // Update game record
         $game->update([
-            'status' => 'completed',
+            'status' => 'finished',
             'winner_symbol' => $winnerSymbol,
             'end_reason' => $endReason,
             'ended_at' => now()
