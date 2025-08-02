@@ -640,7 +640,7 @@ async function subscribeToGameUpdates(gameCode) {
         channel.listen("GameUpdated", (e) => {
             console.log("Game update received:", e);
 
-            if (e.type === "move_made") {
+            if (e.event_type === "move_made") {
                 // Preserve critical player info when merging game state
                 const mySymbol = gameState.mySymbol;
                 const playerId = gameState.playerId;
@@ -661,10 +661,10 @@ async function subscribeToGameUpdates(gameCode) {
                 );
                 updateDisplay();
                 showMessage(
-                    `${e.data.player_id === playerId ? "You" : "Opponent"} made a move`,
+                    `${e.event_data.player_id === playerId ? "You" : "Opponent"} made a move`,
                     "info",
                 );
-            } else if (e.type === "player_joined") {
+            } else if (e.event_type === "player_joined") {
                 showMessage("Opponent joined the game!", "success");
 
                 // Preserve critical player info
@@ -686,12 +686,12 @@ async function subscribeToGameUpdates(gameCode) {
                     gameState.mySymbol,
                 );
                 updateDisplay();
-            } else if (e.type === "player_resigned") {
+            } else if (e.event_type === "player_resigned") {
                 showMessage(
-                    `Player ${e.data.resigning_player} resigned. Player ${e.data.winner} wins!`,
+                    `Player ${e.event_data.resigning_player} resigned. Player ${e.event_data.winner} wins!`,
                     "info",
                 );
-                endGame(e.data.winner);
+                endGame(e.event_data.winner);
             }
         });
 
