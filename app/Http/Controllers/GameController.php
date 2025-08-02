@@ -227,6 +227,7 @@ class GameController extends Controller
         // Update game state and move count
         $gameState = $game->game_state;
         $gameState['game_over'] = true;
+        $gameState['gameWon'] = true;
         $gameState['winner'] = $winnerSymbol;
 
         $game->update([
