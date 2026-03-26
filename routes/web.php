@@ -10,7 +10,7 @@ Route::get('/join/{code}', function ($code) {
     return response()->file(public_path('index.html'));
 });
 
-// Exclude static assets from catch-all route
+// Exclude static assets and API paths from catch-all route
 Route::get('/{any}', function () {
     return response()->file(public_path('index.html'));
-})->where('any', '^(?!.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)).*$');
+})->where('any', '^(?!api/)(?!.*\.(js|css|png|jpg|jpeg|gif|ico|svg|woff|woff2|ttf|eot)).*$');
